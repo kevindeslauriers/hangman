@@ -33,25 +33,31 @@ test('a file with no phrases is refused', () => {
 });
 
 // Every file in themes/ must parse with no skipped lines, so a typo in a
-// theme fails the tests instead of quietly dropping a phrase.
-test('every theme in themes/ parses cleanly', () => {
+// theme fails the tests instead of quietly dropping a phrase. A phrase
+// listed under two categories would only ever show one hint, so that fails too.
+test('every theme in themes/ parses cleanly, with no repeated phrases', () => {
   const dir = path.join(__dirname, '..', 'themes');
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.txt'));
-  assert.ok(files.length >= 2);
+  assert.ok(files.length >= 1);
   const names = new Set();
   for (const f of files) {
     const t = parseTheme(fs.readFileSync(path.join(dir, f), 'utf8'), f);
     assert.deepEqual(t.warnings, [], f);
     assert.ok(!names.has(t.name.toLowerCase()), `two themes are called ${t.name}`);
     names.add(t.name.toLowerCase());
+    const seen = new Map();
+    t.categories.forEach(c => c.phrases.forEach(p => {
+      assert.ok(!seen.has(p), `${f}: ${p} is under both ${seen.get(p)} and ${c.name}`);
+      seen.set(p, c.name);
+    }));
   }
 });
 
-test('the store loads the themes folder, with Family first', () => {
+test('the store loads the themes folder', () => {
   const store = new ThemeStore({ dir: path.join(__dirname, '..', 'themes') });
-  assert.equal(store.first().id, 'family');
-  const test = store.get('test-theme');
-  assert.equal(test.name, 'Test Theme');
-  assert.deepEqual(test.categories.map(c => c.name), ['Animals', 'Canadian things', 'Holidays']);
-  assert.equal(store.list().find(t => t.id === 'test-theme').count, 15);
+  const t = store.get('game-night');
+  assert.equal(t.name, 'Game Night');
+  assert.ok(t.categories.length >= 30);
+  assert.ok(store.list().find(x => x.id === 'game-night').count >= 1000);
+  assert.equal(store.first().id, 'game-night');
 });

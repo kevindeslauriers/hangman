@@ -53,9 +53,9 @@ test('a TV and two phones play over the socket', async () => {
     await ben.wait(m => m.t === 'joined');
 
     const list = await (await fetch(`${base}/api/themes`)).json();
-    assert.ok(list.some(t => t.id === 'test-theme'));
+    assert.ok(list.some(t => t.id === 'game-night'));
 
-    tv.send({ t: 'settings', settings: { themeId: 'test-theme', category: 'Animals' } });
+    tv.send({ t: 'settings', settings: { themeId: 'game-night', category: 'Animals' } });
     tv.send({ t: 'start' });
     const st = await ann.wait(m => m.t === 'state' && m.view.phase === 'play');
     assert.equal(st.view.hint, 'Animals');

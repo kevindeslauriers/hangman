@@ -1,6 +1,6 @@
 # Hangman
 
-Family Hangman for the TV. The TV shows the board; everyone plays their turns on their own phone.
+Hangman for the TV. The TV shows the board; everyone plays their turns on their own phone.
 
 - **TV:** open `/tv` (full screen it). The lobby shows a QR code and a 4 letter code.
 - **Phones:** scan the QR code, or open the site and type the code and a name.
@@ -34,7 +34,7 @@ CANDY CANE
 
 `npm test` checks every theme file and fails on any line the game would skip, so a typo can't quietly drop a phrase.
 
-`family.txt` is the theme from the original game; `test-theme.txt` is a sample.
+`game-night.txt` has 38 topics and over 1,300 phrases.
 
 ## Running
 
