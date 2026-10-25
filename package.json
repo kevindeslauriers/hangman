@@ -1,0 +1,27 @@
+{
+  "name": "hangman",
+  "version": "1.0.0",
+  "description": "Family Hangman for the TV, played from everyone's phones",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kevindeslauriers/hangman.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kevindeslauriers/hangman/issues"
+  },
+  "homepage": "https://github.com/kevindeslauriers/hangman#readme",
+  "dependencies": {
+    "express": "^4.22.3",
+    "qrcode": "^1.5.4",
+    "ws": "^8.22.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
+}

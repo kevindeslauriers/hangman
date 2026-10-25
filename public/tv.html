@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hangman on the TV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+body{font-size:clamp(16px,1.6vw,32px);overflow:hidden}
+.board{
+  height:100%;margin:0 auto;padding:clamp(12px,2vw,40px) clamp(14px,2.4vw,48px);
+  border:clamp(8px,1vw,18px) solid var(--frame);
+  outline:2px solid var(--frame-edge);outline-offset:-2px;border-radius:6px;
+  background:
+    radial-gradient(ellipse at 20% 30%,rgba(255,255,255,.05),transparent 55%),
+    radial-gradient(ellipse at 80% 70%,rgba(255,255,255,.04),transparent 50%),
+    linear-gradient(160deg,var(--board),var(--board-2));
+  display:grid;gap:clamp(8px,1.4vw,28px);
+  grid-template-columns:minmax(0,1fr) minmax(0,1.9fr);
+  grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:"top top" "art play" "keys keys";
+}
+.top{grid-area:top;display:flex;align-items:center;gap:clamp(12px,2vw,40px)}
+.title{font-family:"Cabin Sketch",cursive;font-weight:700;font-size:clamp(30px,3.6vw,72px);margin:0;line-height:1;letter-spacing:.02em}
+.goal{margin:0;color:var(--chalk-soft);font-size:.75em;white-space:nowrap}
+.scores{list-style:none;margin:0;padding:0;display:flex;gap:clamp(10px,1.8vw,36px);flex:1 1 auto;justify-content:center;flex-wrap:wrap}
+.scores li{display:flex;align-items:baseline;gap:.4em;padding:.1em .2em;border-bottom:3px solid transparent;color:var(--chalk-soft);white-space:nowrap}
+.scores li.turn{color:var(--chalk);border-bottom-color:var(--yellow)}
+.scores li.away{opacity:.45}
+.scores li.setter span::after{content:" ✍️"}
+.scores b{font-family:"Cabin Sketch",cursive;font-size:1.35em;color:var(--yellow)}
+.scores li.leader span::before{content:"👑 "}
+.scores li.fire b::after{content:" 🔥";font-size:.8em}
+.tools{display:flex;gap:.5em;flex-wrap:wrap;margin-left:auto;justify-content:flex-end}
+.tools .btn{font-size:.7em}
+
+.art{grid-area:art;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0}
+.art svg{flex:1;min-height:0;width:100%;max-height:100%}
+.gallows,.part{fill:none;stroke:var(--chalk);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.gallows{stroke:var(--chalk-soft)}
+.part{stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset .6s ease-out}
+.part.on{stroke-dashoffset:0;opacity:1}
+.lost .part{stroke:var(--pink)}
+.misses{margin:.3em 0 0;text-align:center;color:var(--chalk-soft);min-height:1.3em}
+.misses s{color:var(--pink);text-decoration-thickness:3px;margin:0 .15em;font-family:"Cabin Sketch",cursive;font-size:1.2em}
+
+.play{grid-area:play;display:flex;flex-direction:column;justify-content:center;min-height:0;min-width:0}
+.play .hint{margin:0 0 .4em;font-size:1.15em}
+.word{--fs:72px;display:flex;flex-wrap:wrap;column-gap:calc(var(--fs)*.7);row-gap:calc(var(--fs)*.35);font-size:var(--fs);width:100%}
+.w{display:flex;gap:calc(var(--fs)*.16);white-space:nowrap}
+.l{font-family:"Cabin Sketch",cursive;font-weight:700;width:.82em;text-align:center;line-height:1.05;border-bottom:.07em solid var(--chalk);min-height:1.05em}
+.l.punct{border-bottom-color:transparent;width:.4em}
+.l.pop{animation:pop .45s ease-out}
+.l.missed{color:var(--pink)}
+@keyframes pop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.msg{margin:.7em 0 0;font-size:1.3em;min-height:1.4em}
+.msg.hot{color:var(--yellow)}
+.status{display:flex;align-items:center;gap:1em;margin-top:.6em;min-height:2.2em}
+.solving{color:var(--blue);font-size:1.2em}
+.clock{display:flex;align-items:center;gap:.6em;flex:1;max-width:28em}
+.clock b{font-family:"Cabin Sketch",cursive;font-weight:700;font-size:2em;min-width:1.3em;text-align:right;color:var(--blue);line-height:1}
+.clock-bar{flex:1;height:.5em;border:2px solid var(--chalk-faint);border-radius:9px;overflow:hidden}
+.clock-bar i{display:block;height:100%;background:var(--blue);transform-origin:left center}
+.clock.low b{color:var(--pink)}
+.clock.low .clock-bar i{background:var(--pink)}
+
+.bottom{grid-area:keys;display:flex;align-items:flex-end;gap:clamp(10px,2vw,40px)}
+.keys{flex:1;display:flex;flex-direction:column;align-items:center;gap:clamp(5px,1vh,12px)}
+.row{display:flex;gap:clamp(4px,.6vw,14px)}
+.keys .key{display:flex;align-items:center;justify-content:center;--kh:clamp(28px,7.5vh,80px);width:min(5.2vw,92px);height:var(--kh);min-width:22px;font-size:calc(var(--kh)*.6)}
+.join{display:flex;align-items:center;gap:.7em;font-size:.8em;color:var(--chalk-soft)}
+.join img{width:clamp(70px,9vw,150px);height:auto;border-radius:6px;background:var(--chalk)}
+.join .code{font-family:"Cabin Sketch",cursive;font-weight:700;font-size:2em;color:var(--yellow);letter-spacing:.12em;line-height:1}
+
+/* overlays */
+.overlay{position:fixed;inset:0;background:rgba(10,16,13,.72);display:flex;align-items:center;justify-content:center;padding:2vh 2vw;z-index:10}
+.card{
+  border:clamp(6px,.8vw,14px) solid var(--frame);border-radius:6px;
+  background:linear-gradient(160deg,var(--board),var(--board-2));
+  padding:clamp(18px,2.4vw,44px);width:min(94vw,1000px);max-height:96vh;overflow:auto;
+}
+.card.wide{width:min(96vw,1500px);font-size:.82em}
+.card h2{font-family:"Cabin Sketch",cursive;font-weight:700;font-size:1.7em;margin:0 0 .4em;line-height:1.1}
+.card h3{font-weight:400;font-size:1.1em;margin:1em 0 .3em;color:var(--blue)}
+.card p{margin:.2em 0 .8em}
+.actions{display:flex;gap:.7em;flex-wrap:wrap;margin-top:1.1em;align-items:center}
+.lobby{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:clamp(16px,3vw,60px)}
+.lobby .qr{width:min(100%,clamp(140px,28vh,340px));border-radius:8px;background:var(--chalk);display:block}
+.lobby .bigcode{font-family:"Cabin Sketch",cursive;font-weight:700;font-size:2.8em;color:var(--yellow);letter-spacing:.14em;line-height:1;margin:.15em 0}
+.url{color:var(--chalk-soft);white-space:nowrap}
+.plist{list-style:none;padding:0;margin:.3em 0;display:grid;gap:.3em}
+.plist li{display:flex;align-items:center;gap:.6em}
+.plist li .dot{width:.6em;height:.6em;border-radius:50%;background:var(--green);flex:none}
+.plist li.away .dot{background:var(--chalk-faint)}
+.plist li span.n{flex:1}
+.plist .btn{font-size:.7em}
+.rules{font-size:.75em;color:var(--chalk-soft);margin-top:.8em!important}
+.joinrow{display:flex;gap:1.2em;align-items:center}
+.settings select.field{max-width:22em}
+.inline{display:flex;gap:1.5em;flex-wrap:wrap}
+.upload-note{font-size:.8em;color:var(--chalk-soft)}
+.warn{font-size:.75em;color:var(--pink);max-height:6em;overflow:auto;margin:.2em 0;padding-left:1.2em}
+.ok{color:var(--green)}
+.tally{color:var(--chalk-soft)}
+#confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:20}
+@media (max-aspect-ratio:1/1){
+  body{overflow:auto}
+  .board{height:auto;min-height:100%;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto;grid-template-areas:"top" "art" "play" "keys"}
+  .art svg{height:28vh;flex:none}
+  .top{flex-wrap:wrap}
+  .lobby{grid-template-columns:1fr}
+  .bottom{flex-direction:column;align-items:center}
+}
+@media (prefers-reduced-motion:reduce){.part{transition:none}.l.pop{animation:none}}
+</style>
+</head>
+<body>
+<main class="board" id="board">
+  <header class="top">
+    <h1 class="title">Hangman</h1>
+    <p class="goal" id="goal"></p>
+    <ul class="scores" id="scores" aria-label="Scores"></ul>
+    <div class="tools">
+      <button class="btn" id="btnNew">New phrase</button>
+      <button class="btn" id="btnSkip">Skip turn</button>
+      <button class="btn" id="btnLobby">Lobby</button>
+      <button class="btn" id="btnSound">Sound on</button>
+      <button class="btn" id="btnFull">Full screen</button>
+    </div>
+  </header>
+
+  <section class="art" id="art">
+    <svg viewBox="0 0 200 240" role="img" aria-label="Hangman drawing">
+      <defs>
+        <filter id="chalk" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="3"/>
+        </filter>
+      </defs>
+      <g filter="url(#chalk)">
+        <path class="gallows" d="M15 228 H150 M50 228 V18 H142 V42 M50 52 L82 18"/>
+        <circle class="part" pathLength="1" cx="142" cy="63" r="20"/>
+        <path class="part" pathLength="1" d="M142 83 V150"/>
+        <path class="part" pathLength="1" d="M142 100 L112 130"/>
+        <path class="part" pathLength="1" d="M142 100 L172 130"/>
+        <path class="part" pathLength="1" d="M142 150 L117 196"/>
+        <path class="part" pathLength="1" d="M142 150 L167 196"/>
+      </g>
+    </svg>
+    <p class="misses" id="misses"></p>
+  </section>
+
+  <section class="play">
+    <p class="hint" id="hint"></p>
+    <div class="word" id="word" aria-live="polite"></div>
+    <p class="msg" id="msg" aria-live="polite"></p>
+    <div class="status">
+      <span class="solving" id="solving" hidden>Solving on the phone…</span>
+      <div class="clock" id="clock" hidden><b id="clockNum"></b><span class="clock-bar"><i id="clockBar"></i></span></div>
+    </div>
+  </section>
+
+  <section class="bottom">
+    <div class="keys" id="keys" aria-label="Letters picked so far"></div>
+    <div class="join" id="joinBadge">
+      <img id="joinQr" alt="QR code to join on a phone">
+      <div>Join on your phone<br><span id="joinUrl"></span><br><span class="code" id="joinCode"></span></div>
+    </div>
+  </section>
+</main>
+
+<div class="overlay" id="ovConnect"><div class="card"><h2>Connecting…</h2><p id="connectText">Finding the game server. If it was asleep this can take a few seconds.</p></div></div>
+
+<div class="overlay" id="ovBusy" hidden><div class="card">
+  <h2>A game is already on another screen</h2>
+  <p>Only one game runs at a time. Take it over here? The other screen will stop showing it, and everyone keeps their scores.</p>
+  <div class="actions"><button class="btn primary" id="takeover">Show the game here</button></div>
+</div></div>
+
+<div class="overlay" id="ovLobby" hidden><div class="card wide">
+  <div class="lobby">
+    <section>
+      <h2>Grab your phones</h2>
+      <div class="joinrow">
+        <img class="qr" id="lobbyQr" alt="QR code to join on a phone">
+        <div><p>Scan the code, or go to <span class="url" id="lobbyUrl"></span> and type</p><p class="bigcode" id="lobbyCode"></p></div>
+      </div>
+      <h3 id="plistTitle">Players</h3>
+      <ul class="plist" id="plist"></ul>
+      <p class="rules">A right letter scores 1 point per spot and you go again. Three right in a row puts you on fire: double points until you miss. Solve it pays 2 points per hidden letter, but a wrong answer costs a miss and your turn. Finishing the phrase is worth 3 bonus points.</p>
+    </section>
+    <section class="settings">
+      <h2>Settings</h2>
+      <h3>Theme</h3>
+      <select class="field" id="theme" aria-label="Theme"></select>
+      <select class="field" id="category" aria-label="Category" style="margin-top:.5em"></select>
+      <div class="actions" style="margin-top:.6em">
+        <label class="btn" for="upload" tabindex="0" id="uploadBtn">Upload a theme</label>
+        <input type="file" id="upload" accept=".txt,text/plain" hidden>
+        <button class="btn" id="deleteTheme" hidden>Delete this theme</button>
+      </div>
+      <p class="upload-note" id="uploadMsg">A theme is a .txt file: “## Category” headings with one phrase per line.</p>
+      <ul class="warn" id="uploadWarn" hidden></ul>
+      <h3>Who picks the phrase?</h3>
+      <label class="choice"><input type="radio" name="mode" value="random"> The game picks from the theme</label>
+      <label class="choice"><input type="radio" name="mode" value="secret"> Players take turns typing a secret phrase on their phone</label>
+      <h3>Options</h3>
+      <label class="choice"><input type="checkbox" id="showtime"> Showtime: whoever solves it gets a singing challenge and everyone votes for bonus points</label>
+      <label class="choice"><input type="checkbox" id="timerOn"> Shot clock: 15 seconds a turn, 20 seconds to type a solve</label>
+      <div class="inline" style="align-items:center;margin-top:.4em">
+        <span>Play to</span>
+        <select class="field" id="target" aria-label="Points to win" style="max-width:9em"><option value="30">30 points</option><option value="50">50 points</option><option value="80">80 points</option><option value="0">No limit</option></select>
+      </div>
+      <p class="err" id="lobbyErr"></p>
+      <div class="actions">
+        <button class="btn primary" id="startGame">Start game</button>
+        <button class="btn" id="resetScores">Reset scores</button>
+      </div>
+    </section>
+  </div>
+</div></div>
+
+<div class="overlay" id="ovSecret" hidden><div class="card">
+  <h2 id="secretTitle"></h2>
+  <p>Their phone has the typing screen. Everyone else, no peeking!</p>
+  <div class="actions"><button class="btn" id="secretRandom">Pick one from the theme instead</button></div>
+</div></div>
+
+<div class="overlay" id="ovEnd" hidden><div class="card">
+  <h2 id="endTitle"></h2>
+  <p id="endText"></p>
+  <p class="big-word" id="endWord"></p>
+  <section id="show" hidden>
+    <h3 id="showWho" style="color:var(--yellow)"></h3>
+    <p class="show-prompt" id="showPrompt"></p>
+    <p class="tally" id="showTally"></p>
+    <p class="show-result" id="showResult" aria-live="polite"></p>
+    <div class="actions" style="margin-top:0"><button class="btn" id="showSwap">Different challenge</button></div>
+  </section>
+  <div class="actions"><button class="btn primary" id="nextRound">Next round</button></div>
+</div></div>
+
+<div class="overlay" id="ovChamp" hidden><div class="card">
+  <h2 id="champTitle"></h2>
+  <ol class="podium" id="podium"></ol>
+  <div class="actions"><button class="btn primary" id="rematch">Rematch</button><button class="btn" id="champLobby">Back to the lobby</button></div>
+</div></div>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<script src="/sound.js"></script>
+<script src="/tv.js"></script>
+</body>
+</html>

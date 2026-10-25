@@ -1,0 +1,30 @@
+# Theme: Test Theme
+// A sample theme to try the upload with. On the TV lobby, choose
+// "Upload a theme" and pick this file.
+//
+// Format:
+//   # Theme name          (first line, optional)
+//   ## Category           (shown on screen as the hint)
+//   One phrase per line   (letters, spaces, apostrophes and hyphens)
+//   // Lines starting with two slashes are notes and are ignored.
+
+## Animals
+POLAR BEAR
+RED PANDA
+GIRAFFE
+HUMPBACK WHALE
+PORCUPINE
+
+## Canadian things
+MAPLE SYRUP
+TIM HORTONS
+CN TOWER
+NIAGARA FALLS
+HOCKEY NIGHT IN CANADA
+
+## Holidays
+THANKSGIVING DINNER
+JACK-O'-LANTERN
+CANDY CANE
+NEW YEAR'S EVE
+FIREWORKS

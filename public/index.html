@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#243A2F">
+<title>Hangman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+body{height:auto;min-height:100%;background:var(--board-2);font-size:20px}
+#app{
+  min-height:100vh;min-height:100dvh;
+  padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(28px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;gap:12px;
+  background:linear-gradient(160deg,var(--board),var(--board-2));
+  max-width:560px;margin:0 auto;
+}
+.status{color:var(--chalk-soft);font-size:.85em;margin:0;min-height:1.1em}
+.me{display:flex;justify-content:space-between;align-items:baseline;gap:1em}
+.me b{color:var(--yellow)}
+.turn{font-family:"Cabin Sketch",cursive;font-weight:700;font-size:1.8em;margin:0;line-height:1.1}
+.turn.mine{color:var(--yellow)}
+.title{font-family:"Cabin Sketch",cursive;font-weight:700;font-size:1.6em;margin:0;line-height:1.1}
+.scores{display:flex;flex-wrap:wrap;gap:.2em 1em;color:var(--chalk-soft);margin:0;padding:0;list-style:none}
+.scores b{color:var(--yellow)}
+.scores .now{color:var(--chalk)}
+.word{display:flex;flex-wrap:wrap;gap:.35em .9em;margin:.2em 0;font-size:var(--fs,28px)}
+.word .w{display:flex;gap:.14em}
+.word .l{font-family:"Cabin Sketch",cursive;font-weight:700;width:.8em;min-height:1.1em;line-height:1.05;text-align:center;border-bottom:.08em solid var(--chalk)}
+.word .l.punct{border-bottom-color:transparent;width:.4em}
+.msg{margin:0;color:var(--yellow);min-height:1.2em}
+.keys{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.keys .key{aspect-ratio:1/1;min-height:42px;font-size:24px;cursor:pointer}
+.keys.off .key{opacity:.35;cursor:default}
+.keys.off .key.hit{opacity:.6}
+.clock{font-family:"Cabin Sketch",cursive;font-weight:700;font-size:1.6em;margin:0;color:var(--blue);min-height:1.1em}
+.clock.low{color:var(--pink)}
+.panel{display:flex;flex-direction:column;gap:.6em}
+.panel .btn{font-size:1em;padding:.55em .8em}
+.row{display:flex;gap:.5em;align-items:end}
+.row .field{flex:1;min-width:0}
+.code{text-transform:uppercase;letter-spacing:.3em;font-family:"Cabin Sketch",cursive;font-weight:700;font-size:1.6em}
+.toast{color:var(--pink);margin:0;min-height:1.2em}
+.small{font-size:.85em;color:var(--chalk-soft)}
+.leave{margin-top:auto;align-self:flex-start;font-size:.8em!important;padding:.2em .7em!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="/phone.js"></script>
+</body>
+</html>
