@@ -208,7 +208,7 @@ function renderLobby(v, entering) {
   const theme = $('#theme');
   if (document.activeElement !== theme) {
     theme.innerHTML = '';
-    V.themes.forEach(t => theme.append(new Option(`${t.name} (${t.count} phrases${t.builtin ? '' : ', uploaded'})`, t.id)));
+    V.themes.forEach(t => theme.append(new Option(`${t.name} (${t.count} phrases)`, t.id)));
     theme.value = s.themeId;
   }
   const t = V.themes.find(x => x.id === s.themeId);
@@ -219,7 +219,6 @@ function renderLobby(v, entering) {
     (t ? t.categories : []).forEach(c => cat.append(new Option(`${c.name} (${c.count})`, c.name)));
     cat.value = s.category;
   }
-  $('#deleteTheme').hidden = !t || t.builtin;
   document.querySelectorAll('input[name=mode]').forEach(r => { r.checked = r.value === s.mode; });
   $('#showtime').checked = s.showtime;
   $('#timerOn').checked = s.timerOn;
@@ -236,37 +235,6 @@ $('#timerOn').onchange = e => setting({ timerOn: e.target.checked });
 $('#target').onchange = e => setting({ target: +e.target.value });
 $('#startGame').onclick = () => { unlockAudio(); cmd('start'); };
 $('#resetScores').onclick = () => cmd('resetScores');
-$('#uploadBtn').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#upload').click(); } };
-
-$('#upload').onchange = async e => {
-  const file = e.target.files[0]; e.target.value = '';
-  if (!file) return;
-  const msg = $('#uploadMsg'), warn = $('#uploadWarn');
-  msg.className = 'upload-note'; msg.textContent = `Uploading ${file.name}…`; warn.hidden = true;
-  try {
-    const res = await fetch('/api/themes?filename=' + encodeURIComponent(file.name), {
-      method: 'POST', headers: { 'Content-Type': 'text/plain; charset=utf-8', 'X-Host-Key': V.hostKey || '' }, body: await file.text(),
-    });
-    const out = await res.json();
-    if (!res.ok) { msg.className = 'err'; msg.textContent = out.error || 'That upload didn’t work.'; return; }
-    msg.className = 'upload-note ok';
-    msg.textContent = `Added “${out.name}” with ${out.count} phrases.`;
-    if (out.warnings.length) {
-      warn.hidden = false; warn.innerHTML = '';
-      out.warnings.forEach(w => { const li = document.createElement('li'); li.textContent = w; warn.append(li); });
-    }
-    await loadThemes();
-    setting({ themeId: out.id });
-  } catch (err) { msg.className = 'err'; msg.textContent = 'That upload didn’t work. Check the connection and try again.'; }
-};
-$('#deleteTheme').onclick = async () => {
-  const t = V.themes.find(x => x.id === V.view.settings.themeId);
-  if (!t || !confirm(`Delete the theme “${t.name}”?`)) return;
-  const res = await fetch('/api/themes/' + encodeURIComponent(t.id), { method: 'DELETE', headers: { 'X-Host-Key': V.hostKey || '' } });
-  if (!res.ok) { $('#lobbyErr').textContent = (await res.json()).error; return; }
-  $('#uploadMsg').className = 'upload-note'; $('#uploadMsg').textContent = `Deleted “${t.name}”.`;
-  loadThemes();
-};
 
 /* ---------- round over and champion ---------- */
 function renderEnd(v) {

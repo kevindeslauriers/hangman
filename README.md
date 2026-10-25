@@ -16,7 +16,7 @@ A right letter scores 1 point per spot and you go again. Three right in a row pu
 
 ## Themes
 
-Upload a theme from the TV lobby. A theme is a plain `.txt` file:
+Themes are `.txt` files in [`themes/`](themes). Every file there shows up in the TV's theme list. To add or change one, commit the file to `main`; Render redeploys in about a minute.
 
 ```
 # Theme: Christmas
@@ -31,11 +31,10 @@ CANDY CANE
 - `## Category` headings. The category is shown on the TV as the hint.
 - One phrase per line: letters, spaces, apostrophes and hyphens, up to 40 characters. Accents are dropped (JALAPEÑO becomes JALAPENO).
 - Lines starting with `//` are notes and are ignored.
-- Uploading a theme with the same name again replaces it.
 
-`samples/test-theme.txt` is a sample to try. `themes/family.txt` is the built-in theme from the original game.
+`npm test` checks every theme file and fails on any line the game would skip, so a typo can't quietly drop a phrase.
 
-Uploaded themes are saved in `$DATA_DIR/themes` (the Render persistent disk).
+`family.txt` is the theme from the original game; `test-theme.txt` is a sample.
 
 ## Running
 
@@ -45,13 +44,6 @@ npm start        # http://localhost:3000/tv
 npm test
 ```
 
-Environment variables:
-
-- `PORT`: set by Render.
-- `DATA_DIR`: where uploaded themes are kept. On Render this is the disk mount, `/var/data`.
-- `ADMIN_KEY` (optional): lets scripts upload themes without the TV, with the header `X-Host-Key: <ADMIN_KEY>`:
-  `curl -X POST --data-binary @samples/test-theme.txt -H "X-Host-Key: $ADMIN_KEY" "https://<site>/api/themes?filename=test-theme.txt"`
-
 ## How it works
 
-`server.js` serves the pages and a WebSocket at `/ws`. `lib/game.js` holds the one game: players, turns, scoring and the shot clock all run on the server, so the TV and the phones are just screens. The hidden phrase is never sent to any screen until the round is over. `lib/themes.js` parses and stores themes.
+`server.js` serves the pages and a WebSocket at `/ws`. `lib/game.js` holds the one game: players, turns, scoring and the shot clock all run on the server, so the TV and the phones are just screens. The hidden phrase is never sent to any screen until the round is over. `lib/themes.js` reads the theme files.

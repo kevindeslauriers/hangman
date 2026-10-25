@@ -1,5 +1,4 @@
 'use strict';
-const fs = require('fs');
 const http = require('http');
 const path = require('path');
 const crypto = require('crypto');
@@ -7,19 +6,10 @@ const express = require('express');
 const { WebSocketServer } = require('ws');
 const QRCode = require('qrcode');
 const { Game, GameError } = require('./lib/game');
-const { ThemeStore, ThemeError } = require('./lib/themes');
+const { ThemeStore } = require('./lib/themes');
 
-function createServer({ dataDir, adminKey, gameOpts = {} } = {}) {
-  let uploadDir = path.join(dataDir || path.join(__dirname, 'data'), 'themes');
-  try {
-    fs.mkdirSync(uploadDir, { recursive: true });
-    fs.accessSync(uploadDir, fs.constants.W_OK);
-  } catch (e) {
-    // No disk mounted yet: keep going, but uploads won't survive a restart.
-    console.warn(`Can't write to ${uploadDir} (${e.code}). Uploaded themes will be lost on restart.`);
-    uploadDir = path.join(__dirname, 'data', 'themes');
-  }
-  const themes = new ThemeStore({ builtinDir: path.join(__dirname, 'themes'), uploadDir });
+function createServer({ gameOpts = {} } = {}) {
+  const themes = new ThemeStore({ dir: path.join(__dirname, 'themes') });
 
   const clients = new Set(); // { ws, role: 'tv'|'phone', playerId }
   const host = { key: null };
@@ -45,7 +35,7 @@ function createServer({ dataDir, adminKey, gameOpts = {} } = {}) {
   const game = new Game({ themes, onChange: scheduleState, fx: fx => broadcast({ t: 'fx', ...fx }), ...gameOpts });
 
   const hostSockets = () => [...clients].filter(c => c.role === 'tv');
-  const isHostKey = k => (host.key && k === host.key) || (adminKey && k === adminKey);
+  const isHostKey = k => !!host.key && k === host.key;
 
   function syncConnected(playerId) {
     const on = [...clients].some(c => c.role === 'phone' && c.playerId === playerId);
@@ -67,35 +57,7 @@ function createServer({ dataDir, adminKey, gameOpts = {} } = {}) {
 
   app.get('/api/themes', (req, res) => res.json(themes.list()));
 
-  const requireHost = (req, res, next) => {
-    if (!isHostKey(req.get('x-host-key'))) return res.status(403).json({ error: 'Only the TV can change themes.' });
-    next();
-  };
-
-  app.post('/api/themes', requireHost, express.text({ type: () => true, limit: '120kb' }), (req, res) => {
-    try {
-      const result = themes.upload(typeof req.body === 'string' ? req.body : '', String(req.query.filename || ''));
-      game.changed();
-      res.json(result);
-    } catch (e) {
-      if (e instanceof ThemeError) return res.status(400).json({ error: e.message });
-      throw e;
-    }
-  });
-
-  app.delete('/api/themes/:id', requireHost, (req, res) => {
-    try {
-      themes.remove(req.params.id);
-      game.themeRemoved(req.params.id);
-      res.json({ ok: true });
-    } catch (e) {
-      if (e instanceof ThemeError) return res.status(400).json({ error: e.message });
-      throw e;
-    }
-  });
-
   app.use((err, req, res, next) => {
-    if (err.type === 'entity.too.large') return res.status(413).json({ error: 'That file is too big. Keep it under 100 KB.' });
     console.error(err);
     res.status(500).json({ error: 'Something went wrong.' });
   });
@@ -206,7 +168,7 @@ function createServer({ dataDir, adminKey, gameOpts = {} } = {}) {
 module.exports = { createServer };
 
 if (require.main === module) {
-  const { server } = createServer({ dataDir: process.env.DATA_DIR, adminKey: process.env.ADMIN_KEY });
+  const { server } = createServer();
   const port = process.env.PORT || 3000;
   server.listen(port, () => console.log(`Hangman on http://localhost:${port}`));
 }

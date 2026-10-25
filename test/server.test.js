@@ -1,9 +1,6 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
 const WebSocket = require('ws');
 const { createServer } = require('../server');
 
@@ -30,9 +27,8 @@ function client(port) {
   };
 }
 
-test('a TV and two phones play over the socket, and the TV uploads a theme', async () => {
-  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hangman-srv-'));
-  const { server, game } = createServer({ dataDir, gameOpts: { code: 'WXYZ' } });
+test('a TV and two phones play over the socket', async () => {
+  const { server, game } = createServer({ gameOpts: { code: 'WXYZ' } });
   await new Promise(r => server.listen(0, r));
   const port = server.address().port;
   const base = `http://127.0.0.1:${port}`;
@@ -56,19 +52,10 @@ test('a TV and two phones play over the socket, and the TV uploads a theme', asy
     ben.send({ t: 'hello', role: 'phone', code: 'WXYZ', name: 'Ben' });
     await ben.wait(m => m.t === 'joined');
 
-    // Upload needs the TV's key.
-    const text = fs.readFileSync(path.join(__dirname, '..', 'samples', 'test-theme.txt'), 'utf8');
-    let res = await fetch(`${base}/api/themes?filename=test-theme.txt`, { method: 'POST', body: text });
-    assert.equal(res.status, 403);
-    res = await fetch(`${base}/api/themes?filename=test-theme.txt`, { method: 'POST', body: text, headers: { 'X-Host-Key': hostKey, 'Content-Type': 'text/plain' } });
-    const up = await res.json();
-    assert.equal(res.status, 200, JSON.stringify(up));
-    assert.equal(up.id, 'u-test-theme');
-    assert.equal(up.count, 15);
     const list = await (await fetch(`${base}/api/themes`)).json();
-    assert.deepEqual(list.map(t => t.id).sort(), ['family', 'u-test-theme']);
+    assert.ok(list.some(t => t.id === 'test-theme'));
 
-    tv.send({ t: 'settings', settings: { themeId: 'u-test-theme', category: 'Animals' } });
+    tv.send({ t: 'settings', settings: { themeId: 'test-theme', category: 'Animals' } });
     tv.send({ t: 'start' });
     const st = await ann.wait(m => m.t === 'state' && m.view.phase === 'play');
     assert.equal(st.view.hint, 'Animals');

@@ -101,9 +101,6 @@ body{font-size:clamp(16px,1.6vw,32px);overflow:hidden}
 .joinrow{display:flex;gap:1.2em;align-items:center}
 .settings select.field{max-width:22em}
 .inline{display:flex;gap:1.5em;flex-wrap:wrap}
-.upload-note{font-size:.8em;color:var(--chalk-soft)}
-.warn{font-size:.75em;color:var(--pink);max-height:6em;overflow:auto;margin:.2em 0;padding-left:1.2em}
-.ok{color:var(--green)}
 .tally{color:var(--chalk-soft)}
 #confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:20}
 @media (max-aspect-ratio:1/1){
@@ -197,13 +194,7 @@ body{font-size:clamp(16px,1.6vw,32px);overflow:hidden}
       <h3>Theme</h3>
       <select class="field" id="theme" aria-label="Theme"></select>
       <select class="field" id="category" aria-label="Category" style="margin-top:.5em"></select>
-      <div class="actions" style="margin-top:.6em">
-        <label class="btn" for="upload" tabindex="0" id="uploadBtn">Upload a theme</label>
-        <input type="file" id="upload" accept=".txt,text/plain" hidden>
-        <button class="btn" id="deleteTheme" hidden>Delete this theme</button>
-      </div>
-      <p class="upload-note" id="uploadMsg">A theme is a .txt file: “## Category” headings with one phrase per line.</p>
-      <ul class="warn" id="uploadWarn" hidden></ul>
+      <p class="rules">New themes go in the themes folder on GitHub.</p>
       <h3>Who picks the phrase?</h3>
       <label class="choice"><input type="radio" name="mode" value="random"> The game picks from the theme</label>
       <label class="choice"><input type="radio" name="mode" value="secret"> Players take turns typing a secret phrase on their phone</label>

@@ -1,6 +1,6 @@
 # Theme: Test Theme
-// A sample theme to try the upload with. On the TV lobby, choose
-// "Upload a theme" and pick this file.
+// A sample theme. Every .txt file in this folder shows up in the TV's
+// theme list after it is pushed to main.
 //
 // Format:
 //   # Theme name          (first line, optional)
