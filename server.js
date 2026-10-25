@@ -1,4 +1,5 @@
 'use strict';
+const fs = require('fs');
 const http = require('http');
 const path = require('path');
 const crypto = require('crypto');
@@ -9,10 +10,16 @@ const { Game, GameError } = require('./lib/game');
 const { ThemeStore, ThemeError } = require('./lib/themes');
 
 function createServer({ dataDir, adminKey, gameOpts = {} } = {}) {
-  const themes = new ThemeStore({
-    builtinDir: path.join(__dirname, 'themes'),
-    uploadDir: path.join(dataDir || path.join(__dirname, 'data'), 'themes'),
-  });
+  let uploadDir = path.join(dataDir || path.join(__dirname, 'data'), 'themes');
+  try {
+    fs.mkdirSync(uploadDir, { recursive: true });
+    fs.accessSync(uploadDir, fs.constants.W_OK);
+  } catch (e) {
+    // No disk mounted yet: keep going, but uploads won't survive a restart.
+    console.warn(`Can't write to ${uploadDir} (${e.code}). Uploaded themes will be lost on restart.`);
+    uploadDir = path.join(__dirname, 'data', 'themes');
+  }
+  const themes = new ThemeStore({ builtinDir: path.join(__dirname, 'themes'), uploadDir });
 
   const clients = new Set(); // { ws, role: 'tv'|'phone', playerId }
   const host = { key: null };
