@@ -1,6 +1,6 @@
-# Hangman
+# Game night
 
-Hangman for the TV. The TV shows the board; everyone plays their turns on their own phone.
+Two party games for the TV: **Hangman** and **Family Face-Off** (a survey game show). The TV shows the board; everyone plays on their own phone. Switch games from the TV lobby.
 
 - **TV:** open `/tv` (full screen it). The lobby shows a QR code and a 4 letter code.
 - **Phones:** scan the QR code, or open the site and type the code and a name.
@@ -13,6 +13,28 @@ A right letter scores 1 point per spot and you go again. Three right in a row pu
 **Showtime:** whoever solves it gets a singing challenge. Everyone else votes on their phone (1 to 3) and the performer gets the average.
 
 **Secret phrase mode:** players take turns typing a phrase on their phone. The person who typed it sits that round out.
+
+## Family Face-Off
+
+Every player is their own family (2 to 8 players).
+
+- **Face-off:** everyone buzzes in on their phone. The first two answer; the higher answer on the board wins control (the top answer wins outright). If both miss, the buzzer reopens.
+- **Play or pass**, then the family in control names answers until the board is cleared or they get three strikes.
+- **Steal:** after three strikes, everyone else types one answer. The earliest right answer takes the bank; if nobody gets one, the family in control keeps it.
+- Round 3 is double points, round 4 on is triple. First to the target (200, 300 or 500) plays **Fast Money** with a partner they pick (or plays both halves): five questions in 20 seconds, then the partner gets 25 seconds and can't repeat an answer. 200 points wins.
+- Typed answers are matched automatically (plurals, "a"/"the", small typos, and the other wordings in the survey file). When it misses one, the TV shows **That counts** to credit the right answer, and **Give a strike** for someone who stalls.
+
+### Surveys
+
+Questions are `.txt` files in [`surveys/`](surveys):
+
+```
+? Name something people take to the beach.
+SUNSCREEN 31 / SUNBLOCK / LOTION
+TOWEL 24 / BEACH TOWEL
+```
+
+`?` starts a question. Each answer line is the answer as shown on the board, its points, then other ways people might say it after slashes. 3 to 8 answers, highest points first, adding up to 100 or less. `npm test` checks every file, including that no wording matches the wrong answer.
 
 ## Themes
 

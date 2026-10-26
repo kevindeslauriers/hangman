@@ -72,6 +72,23 @@ test('a TV and two phones play over the socket', async () => {
     assert.equal(after.view.players.find(p => p.name === 'Ben').id, after.you);
     assert.equal(after.view.turnId, after.you);
 
+    // Back to the lobby, then over to Family Face-Off: everyone comes along.
+    tv.send({ t: 'lobby' });
+    await tv.wait(m => m.t === 'state' && m.view.phase === 'lobby');
+    ann.clear();
+    tv.send({ t: 'switchGame', to: 'feud' });
+    const fs = await ann.wait(m => m.t === 'state' && m.view.game === 'feud');
+    assert.deepEqual(fs.view.players.map(p => p.name), ['Ann', 'Ben']);
+    tv.send({ t: 'start' });
+    await ben.wait(m => m.t === 'state' && m.view.game === 'feud' && m.view.phase === 'faceoff');
+    ben.send({ t: 'buzz' });
+    const buzzed = await ann.wait(m => m.t === 'state' && m.view.faceoff && m.view.faceoff.contenders.length === 1);
+    assert.equal(buzzed.view.faceoff.answering, buzzed.view.players.find(p => p.name === 'Ben').id);
+    ann.send({ t: 'guess', l: 'A' }); // a Hangman command does nothing in Face-Off
+    tv.send({ t: 'switchGame', to: 'hangman' });
+    const err2 = await tv.wait(m => m.t === 'error');
+    assert.match(err2.msg, /from the lobby/);
+
     const qr = await fetch(`${base}/qr.svg`);
     assert.match(await qr.text(), /<svg/);
     assert.equal((await fetch(`${base}/healthz`)).status, 200);

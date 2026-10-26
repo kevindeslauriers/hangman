@@ -1,0 +1,91 @@
+/* Family Face-Off: game show stage, blue and gold. Shared by the TV and phones. */
+:root{
+  --blue-0:#04103d; --blue-1:#0a1f70; --blue-2:#1b3fbf; --blue-3:#2e64ff;
+  --gold-1:#ffd54a; --gold-2:#e0a800; --red:#ff2b3a;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%}
+body{
+  margin:0;min-height:100%;color:#fff;font-family:"Oswald","Arial Narrow",system-ui,sans-serif;line-height:1.3;
+  background:
+    repeating-conic-gradient(from 0deg at 50% 115%,rgba(255,255,255,.05) 0deg 6deg,transparent 6deg 14deg),
+    radial-gradient(ellipse at 50% 20%,var(--blue-2) 0%,var(--blue-1) 45%,var(--blue-0) 100%);
+  background-attachment:fixed;
+}
+button,input,select{font:inherit;color:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:4px solid var(--gold-1);outline-offset:3px}
+
+.logo{
+  font-family:"Anton",sans-serif;text-transform:uppercase;line-height:.95;text-align:center;letter-spacing:.04em;
+  padding:.25em 1em .3em;border-radius:50%/60%;
+  background:radial-gradient(ellipse at 50% 30%,#3a6dff,#0b2a8a 70%);
+  border:.14em solid var(--gold-1);box-shadow:0 0 0 .08em #6b4a00,0 .25em .8em rgba(0,0,0,.6);
+  color:#fff;text-shadow:0 .06em 0 #001a66;
+}
+.logo small{display:block;font-size:.55em;color:var(--gold-1);letter-spacing:.2em}
+
+.btn{
+  background:linear-gradient(#2a56e8,#0b2a8a);border:2px solid #9fc0ff;border-radius:.6em;padding:.3em 1em;cursor:pointer;
+  font-family:"Oswald",sans-serif;letter-spacing:.03em;text-transform:uppercase;box-shadow:0 .15em .4em rgba(0,0,0,.4)
+}
+.btn:hover{filter:brightness(1.15)}
+.btn.primary{background:linear-gradient(#ffe48a,#e0a800);border-color:#fff2b8;color:#04155a;font-weight:600}
+.btn.red{background:linear-gradient(#ff5a66,#c4001a);border-color:#ffb3ba}
+.btn:disabled{opacity:.45;cursor:default;filter:none}
+.field{background:rgba(0,0,0,.3);border:2px solid #9fc0ff;border-radius:.4em;padding:.35em .6em;width:100%}
+.field:focus{border-color:var(--gold-1);outline:none}
+select.field option{background:var(--blue-1)}
+.choice{display:flex;align-items:center;gap:.6em;margin:.35em 0;cursor:pointer}
+.choice input{width:1.1em;height:1.1em;accent-color:var(--gold-1);flex:none}
+.err{color:#ff9aa8;min-height:1.2em;margin:.2em 0}
+
+/* The board: a gold frame around two columns of answer tiles */
+.board{
+  display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:.5vw;padding:.9vw;border-radius:.9vw;
+  background:linear-gradient(#ffe9a3,#b8860b 40%,#ffe9a3 60%,#8a6400);
+  box-shadow:0 0 0 .3vw #3d2a00,0 1vw 3vw rgba(0,0,0,.7);
+}
+.board .col{display:contents}
+.tile{perspective:800px;background:#000;border-radius:.35vw;position:relative;min-height:2.6em}
+.tile .face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:.35vw;backface-visibility:hidden;
+  transition:transform .55s cubic-bezier(.3,1.4,.6,1)}
+.tile .front{background:linear-gradient(#2e64ff,#0b2fa8);border:2px solid #7fa6ff}
+.tile .back{background:linear-gradient(#3b74ff,#1440c8);border:2px solid #cfe0ff;transform:rotateX(180deg);justify-content:space-between;padding-left:.7em}
+.tile.open .front{transform:rotateX(-180deg)}
+.tile.open .back{transform:rotateX(0)}
+.tile.empty{background:linear-gradient(#0a1d5e,#06134a);border:2px solid #24408f}
+.tile.empty .face{display:none}
+.num{font-family:"Anton",sans-serif;width:1.9em;height:1.4em;display:flex;align-items:center;justify-content:center;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 35%,#4c80ff,#0b2a8a);border:.08em solid #fff;box-shadow:0 0 .3em rgba(0,0,0,.6);line-height:1}
+.txt{font-family:"Anton",sans-serif;letter-spacing:.03em;text-shadow:0 .06em .1em #001a66;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pts{font-family:"Anton",sans-serif;height:100%;min-width:2.3em;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(#0b2fa8,#061c6e);border-left:2px solid #cfe0ff}
+.tile.missed .back{background:linear-gradient(#22356f,#16245a);border-color:#4b5f9e;color:#c9d5ff}
+
+/* Family score cards */
+.fam{min-width:8em;text-align:center;padding:.25em .8em .35em;border-radius:.5em;background:linear-gradient(#0b2a8a,#04155a);
+  border:3px solid #4a6fe0;box-shadow:0 .2em .6em rgba(0,0,0,.5);position:relative}
+.fam .nm{font-family:"Oswald",sans-serif;font-weight:600;font-size:.9em;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.fam .sc{font-family:"Anton",sans-serif;font-size:1.9em;line-height:1}
+.fam.ctrl{border-color:var(--gold-1);box-shadow:0 0 1em rgba(255,213,74,.6)}
+.fam.ctrl::after{content:"IN CONTROL";position:absolute;top:-1.2em;left:50%;transform:translateX(-50%);font-size:.55em;color:var(--gold-1);letter-spacing:.1em;white-space:nowrap}
+.fam.buzz{border-color:#fff}
+.fam.away{opacity:.45}
+.fam.locked .nm::after{content:" ✓";color:#7CFC9A}
+
+/* Overlays */
+.overlay{position:fixed;inset:0;background:rgba(2,8,30,.78);display:flex;align-items:center;justify-content:center;padding:2vh 2vw;z-index:10}
+.card{
+  border:.35em solid var(--gold-2);border-radius:1em;background:radial-gradient(ellipse at 50% 0%,#1d44c8,#0a1f70 70%);
+  padding:clamp(16px,2.2vw,40px);width:min(94vw,980px);max-height:96vh;overflow:auto;box-shadow:0 1em 3em rgba(0,0,0,.6)
+}
+.card.wide{width:min(96vw,1500px);font-size:.85em}
+.card h2{font-family:"Anton",sans-serif;font-size:2em;margin:0 0 .4em;letter-spacing:.04em;color:var(--gold-1);line-height:1.05}
+.card h3{font-weight:400;font-size:1.05em;margin:1em 0 .3em;color:#bcd0ff;text-transform:uppercase;letter-spacing:.08em}
+.card p{margin:.2em 0 .8em}
+.card .actions{display:flex;gap:.7em;flex-wrap:wrap;margin-top:1.1em}
+.podium{margin:.4em 0 0;padding-left:1.4em;font-size:1.3em}
+.podium li{margin:.2em 0}
+.podium li:first-child{font-family:"Anton",sans-serif;font-size:1.5em;color:var(--gold-1);letter-spacing:.03em}

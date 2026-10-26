@@ -6,10 +6,13 @@ const express = require('express');
 const { WebSocketServer } = require('ws');
 const QRCode = require('qrcode');
 const { Game, GameError } = require('./lib/game');
+const { Feud, FeudError } = require('./lib/feud');
 const { ThemeStore } = require('./lib/themes');
+const { SurveyStore } = require('./lib/survey');
 
 function createServer({ gameOpts = {} } = {}) {
   const themes = new ThemeStore({ dir: path.join(__dirname, 'themes') });
+  const surveys = new SurveyStore({ dir: path.join(__dirname, 'surveys') });
 
   const clients = new Set(); // { ws, role: 'tv'|'phone', playerId }
   const host = { key: null };
@@ -24,7 +27,7 @@ function createServer({ gameOpts = {} } = {}) {
     pending = true;
     setImmediate(() => {
       pending = false;
-      const v = game.view();
+      const v = { ...cur().view(), game: mode };
       clients.forEach(c => {
         if (c.role === 'tv') send(c.ws, { t: 'state', view: v });
         else if (c.role === 'phone') send(c.ws, { t: 'state', view: v, you: c.playerId });
@@ -32,14 +35,32 @@ function createServer({ gameOpts = {} } = {}) {
     });
   };
 
-  const game = new Game({ themes, onChange: scheduleState, fx: fx => broadcast({ t: 'fx', ...fx }), ...gameOpts });
+  // One game runs at a time; the TV switches between them from the lobby.
+  const fx = f => broadcast({ t: 'fx', ...f });
+  const game = new Game({ themes, onChange: scheduleState, fx, ...gameOpts });
+  const feud = new Feud({ surveys, onChange: scheduleState, fx, ...gameOpts, code: game.code });
+  const games = { hangman: game, feud };
+  let mode = 'hangman';
+  const cur = () => games[mode];
+  const view = () => ({ ...cur().view(), game: mode });
+
+  function switchGame(to) {
+    if (!games[to]) throw new GameError('Unknown game.');
+    if (to === mode) return;
+    if (cur().phase !== 'lobby') throw new GameError('Switch games from the lobby.');
+    const from = cur();
+    from.stopTimer();
+    games[to].adoptPlayers(from.players, from.nextId);
+    mode = to;
+    cur().toLobby();
+  }
 
   const hostSockets = () => [...clients].filter(c => c.role === 'tv');
   const isHostKey = k => !!host.key && k === host.key;
 
   function syncConnected(playerId) {
     const on = [...clients].some(c => c.role === 'phone' && c.playerId === playerId);
-    game.setConnected(playerId, on);
+    cur().setConnected(playerId, on);
   }
 
   const app = express();
@@ -50,7 +71,7 @@ function createServer({ gameOpts = {} } = {}) {
 
   app.get('/qr.svg', async (req, res) => {
     const proto = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0];
-    const url = `${proto}://${req.get('host')}/?code=${game.code}`;
+    const url = `${proto}://${req.get('host')}/?code=${cur().code}`;
     res.type('image/svg+xml').set('Cache-Control', 'no-store')
       .send(await QRCode.toString(url, { type: 'svg', margin: 1, color: { dark: '#24372D', light: '#F2EEE3' } }));
   });
@@ -65,7 +86,45 @@ function createServer({ gameOpts = {} } = {}) {
   const server = http.createServer(app);
   const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 16 * 1024 });
 
+  const kick = id => {
+    clients.forEach(c => { if (c.role === 'phone' && c.playerId === id) { send(c.ws, { t: 'kicked' }); c.playerId = null; c.role = null; } });
+    cur().remove(id);
+  };
+  const leave = (m, id, c) => { c.playerId = null; c.role = null; cur().remove(id); send(c.ws, { t: 'left' }); };
+
+  const FEUD_TV = {
+    switchGame: m => switchGame(m.to),
+    settings: m => feud.updateSettings(m.settings || {}),
+    start: () => feud.start(),
+    lobby: () => feud.toLobby(),
+    next: () => feud.next(),
+    override: m => feud.override(+m.idx, m.id),
+    strike: () => feud.forceStrike(),
+    pickPartner: m => feud.pickPartner(null, m.id),
+    fastGo: () => feud.fastGo(),
+    fastNext: () => feud.fastNext(),
+    fastFix: m => feud.fastFix(+m.part, +m.q, +m.idx),
+    finish: () => feud.finish(),
+    kick: m => kick(m.id),
+  };
+  const FEUD_PHONE = {
+    buzz: (m, id) => feud.buzz(id),
+    faceoff: (m, id) => feud.faceoffAnswer(id, m.a),
+    decide: (m, id) => feud.decide(id, m.choice === 'pass' ? 'pass' : 'play'),
+    answer: (m, id) => feud.answer(id, m.a),
+    steal: (m, id) => feud.stealAnswer(id, m.a),
+    next: () => feud.next(),
+    pickPartner: (m, id) => feud.pickPartner(id, m.id),
+    fastGo: (m, id) => { if (!feud.fast || feud.fast.ids[feud.fast.part] !== id) throw new FeudError('It’s not your turn.'); feud.fastGo(); },
+    fastNext: () => feud.fastNext(),
+    fast: (m, id) => feud.fastAnswer(id, m.a, !!m.pass),
+    finish: () => feud.finish(),
+    newGame: () => { if (feud.phase !== 'champ') throw new FeudError('The game isn’t over.'); feud.toLobby(); },
+    leave,
+  };
+
   const TV_CMDS = {
+    switchGame: m => switchGame(m.to),
     settings: m => game.updateSettings(m.settings || {}),
     start: () => game.start(),
     resetScores: () => game.resetScores(),
@@ -76,10 +135,7 @@ function createServer({ gameOpts = {} } = {}) {
     swap: () => game.swap(),
     next: () => game.next(),
     rematch: () => game.rematch(),
-    kick: m => {
-      clients.forEach(c => { if (c.role === 'phone' && c.playerId === m.id) { send(c.ws, { t: 'kicked' }); c.playerId = null; c.role = null; } });
-      game.remove(m.id);
-    },
+    kick: m => kick(m.id),
   };
   const PHONE_CMDS = {
     guess: (m, id) => game.guess(id, m.l),
@@ -95,7 +151,7 @@ function createServer({ gameOpts = {} } = {}) {
     },
     next: () => game.next(),
     rematch: () => game.rematch(),
-    leave: (m, id, c) => { c.playerId = null; c.role = null; game.remove(id); send(c.ws, { t: 'left' }); },
+    leave,
   };
 
   function helloTv(c, m) {
@@ -108,22 +164,22 @@ function createServer({ gameOpts = {} } = {}) {
     }
     c.role = 'tv';
     send(c.ws, { t: 'host', hostKey: m.hostKey && isHostKey(m.hostKey) && !m.takeover ? m.hostKey : host.key });
-    send(c.ws, { t: 'state', view: game.view() });
+    send(c.ws, { t: 'state', view: view() });
   }
 
   function helloPhone(c, m) {
-    let p = m.token ? game.players.find(x => x.token === m.token) : null;
+    let p = m.token ? cur().players.find(x => x.token === m.token) : null;
     if (!p) {
       if (!m.name) { send(c.ws, { t: 'needJoin' }); return; }
-      if (String(m.code || '').trim().toUpperCase() !== game.code) throw new GameError('That code doesn’t match the one on the TV.');
-      p = game.join(m.name);
+      if (String(m.code || '').trim().toUpperCase() !== cur().code) throw new GameError('That code doesn’t match the one on the TV.');
+      p = cur().join(m.name);
     }
     if (c.playerId && c.playerId !== p.id) { const old = c.playerId; c.playerId = null; syncConnected(old); }
     c.role = 'phone';
     c.playerId = p.id;
     send(c.ws, { t: 'joined', token: p.token, id: p.id, name: p.name });
     syncConnected(p.id);
-    send(c.ws, { t: 'state', view: game.view(), you: p.id });
+    send(c.ws, { t: 'state', view: view(), you: p.id });
   }
 
   wss.on('connection', ws => {
@@ -137,10 +193,12 @@ function createServer({ gameOpts = {} } = {}) {
       try {
         if (m.t === 'hello' && m.role === 'tv') return helloTv(c, m);
         if (m.t === 'hello' && m.role === 'phone') return helloPhone(c, m);
-        if (c.role === 'tv' && TV_CMDS[m.t]) return TV_CMDS[m.t](m);
-        if (c.role === 'phone' && c.playerId && PHONE_CMDS[m.t]) return PHONE_CMDS[m.t](m, c.playerId, c);
+        const tv = mode === 'feud' ? FEUD_TV : TV_CMDS;
+        const phone = mode === 'feud' ? FEUD_PHONE : PHONE_CMDS;
+        if (c.role === 'tv' && tv[m.t]) return tv[m.t](m);
+        if (c.role === 'phone' && c.playerId && phone[m.t]) return phone[m.t](m, c.playerId, c);
       } catch (e) {
-        if (e instanceof GameError) return send(ws, { t: 'error', msg: e.message });
+        if (e instanceof GameError || e instanceof FeudError) return send(ws, { t: 'error', msg: e.message });
         console.error(e);
         send(ws, { t: 'error', msg: 'Something went wrong.' });
       }
@@ -160,9 +218,9 @@ function createServer({ gameOpts = {} } = {}) {
     });
   }, 25000);
   beat.unref();
-  server.on('close', () => { clearInterval(beat); game.stopTimer(); });
+  server.on('close', () => { clearInterval(beat); game.stopTimer(); feud.stopTimer(); });
 
-  return { server, game, themes };
+  return { server, game, feud, themes };
 }
 
 module.exports = { createServer };
@@ -170,5 +228,5 @@ module.exports = { createServer };
 if (require.main === module) {
   const { server } = createServer();
   const port = process.env.PORT || 3000;
-  server.listen(port, () => console.log(`Hangman on http://localhost:${port}`));
+  server.listen(port, () => console.log(`Game night on http://localhost:${port}`));
 }

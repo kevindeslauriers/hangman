@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Family Face-Off</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/feud.css">
+<style>
+body{font-size:clamp(14px,1.5vw,30px);overflow:hidden;height:100vh}
+.stage{height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:1.2vh;padding:1.6vh 2vw 1.2vh;position:relative}
+.top{display:flex;align-items:center;gap:2vw}
+.top .logo{font-size:clamp(18px,1.9vw,38px)}
+.roundinfo{font-family:"Anton",sans-serif;font-size:1.3em;letter-spacing:.06em;color:var(--gold-1);text-transform:uppercase}
+.roundinfo .mult{color:#fff;background:var(--red);padding:.05em .5em;border-radius:.3em;margin-left:.5em}
+.tools{margin-left:auto;display:flex;gap:.5em;flex-wrap:wrap;justify-content:flex-end}
+.tools .btn{font-size:.65em}
+
+.center{display:flex;flex-direction:column;align-items:center;gap:1.2vh;min-height:0}
+.bank{font-family:"Anton",sans-serif;font-size:3.2em;line-height:1;min-width:3.4em;text-align:center;padding:.12em .5em;
+  background:linear-gradient(#0b2a8a,#04155a);border:.12em solid var(--gold-2);border-radius:.25em;box-shadow:0 0 0 .08em #000,0 .3em 1em rgba(0,0,0,.6);color:#fff}
+.question{font-family:"Oswald",sans-serif;font-weight:600;font-size:1.55em;text-align:center;max-width:70vw;min-height:1.3em;line-height:1.2;text-shadow:0 .08em .2em #000}
+.boardwrap{width:min(1400px,78vw);flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.board{flex:1 1 auto;min-height:0}
+.board .tile{min-height:0}
+.board .tile .num{font-size:min(2.8em,5vh)}
+.board .tile .txt{font-size:min(1.9em,4.6vh)}
+.board .tile .pts{font-size:min(2em,4.8vh)}
+.strikes{display:flex;gap:.4em;height:1.6em;justify-content:center}
+.strikes span{font-family:"Anton",sans-serif;font-size:1.6em;line-height:1;color:var(--red);text-shadow:0 0 .2em #000,0 0 .05em #fff}
+.msg{font-family:"Oswald",sans-serif;font-size:1.3em;text-align:center;margin:0;min-height:1.3em;color:var(--gold-1);text-shadow:0 .08em .2em #000}
+.clock{width:min(700px,50vw);height:.55em;border:2px solid rgba(255,255,255,.4);border-radius:1em;overflow:hidden;position:relative}
+.clock i{display:block;height:100%;background:linear-gradient(90deg,var(--gold-1),var(--gold-2));transform-origin:left}
+.clock.low i{background:var(--red)}
+.clockrow{display:flex;align-items:center;gap:.7em;min-height:1.6em}
+.clocknum{font-family:"Anton",sans-serif;font-size:1.5em;width:1.6em;text-align:right}
+.faceoff{display:flex;gap:2vw;align-items:center;justify-content:center;min-height:2.6em}
+.faceoff .side{font-family:"Oswald",sans-serif;text-align:center;min-width:12em}
+.faceoff .side b{display:block;font-family:"Anton",sans-serif;font-size:1.5em;letter-spacing:.04em}
+.faceoff .side.now b{color:var(--gold-1)}
+.faceoff .side i{font-style:normal;opacity:.85}
+.faceoff .vs{font-family:"Anton",sans-serif;font-size:1.6em;color:var(--red)}
+.fix{display:flex;gap:.6em;align-items:center;font-size:.8em;background:rgba(0,0,0,.35);padding:.35em .8em;border-radius:.5em}
+.fix select{font-size:1em}
+.actions{display:flex;gap:.8em}
+
+.families{display:flex;gap:1vw;justify-content:center;align-items:flex-end;flex-wrap:wrap;padding-right:13vw}
+.join{position:absolute;right:2vw;bottom:1.2vh;display:flex;align-items:center;gap:.6em;font-size:.7em;text-align:right}
+.join img{width:clamp(60px,7vw,130px);border-radius:6px;background:#fff;padding:3px}
+.join .code{font-family:"Anton",sans-serif;font-size:2.2em;letter-spacing:.12em;color:var(--gold-1);line-height:1}
+
+/* Big strike X, like the show */
+.bigx{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;gap:2vw;pointer-events:none;z-index:30}
+.bigx span{font-family:"Anton",sans-serif;font-size:42vh;line-height:1;color:var(--red);
+  -webkit-text-stroke:.035em #fff;text-shadow:0 0 .1em rgba(255,0,0,.8),0 0 .3em #000;animation:xpop 1.3s ease-out forwards}
+@keyframes xpop{0%{transform:scale(.3);opacity:0}12%{transform:scale(1.08);opacity:1}80%{opacity:1}100%{opacity:0;transform:scale(1)}}
+
+/* Fast Money */
+.fast{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;z-index:5;
+  background:radial-gradient(ellipse at 50% 30%,#1b3fbf 0%,#0a1f70 45%,#04103d 100%)}
+.fast h2{font-family:"Anton",sans-serif;font-size:3em;margin:0;color:var(--gold-1);letter-spacing:.06em;text-shadow:0 .06em 0 #6b4a00,0 .2em .4em #000}
+.fast .fq{font-family:"Oswald",sans-serif;font-size:1.5em;min-height:1.3em;text-align:center;max-width:80vw}
+.fastboard{display:grid;grid-template-columns:1fr 1fr;gap:1.2vw;padding:1vw;border-radius:1vw;width:min(1400px,86vw);
+  background:linear-gradient(#ffe9a3,#b8860b);box-shadow:0 0 0 .3vw #3d2a00,0 1vw 3vw rgba(0,0,0,.7)}
+.fastcol{background:#000;border-radius:.6vw;padding:.6vw;display:grid;gap:.5vw}
+.frow{display:grid;grid-template-columns:1fr 3.6em;gap:.4vw;height:min(8vh,4.2em)}
+.frow div{background:linear-gradient(#2e64ff,#0b2fa8);border:2px solid #9fc0ff;border-radius:.3vw;display:flex;align-items:center;
+  font-family:"Anton",sans-serif;font-size:1.6em;padding:0 .5em;letter-spacing:.03em;overflow:hidden;white-space:nowrap}
+.frow div.p{justify-content:center;background:linear-gradient(#0b2fa8,#061c6e)}
+.frow div.zero{color:#ff9aa8}
+.frow div.p.rev{animation:revpop .45s both}
+@keyframes revpop{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:none}}
+.frow select{font-size:.5em;margin-left:auto;max-width:9em}
+.fasttotal{font-family:"Anton",sans-serif;font-size:2.4em;display:flex;gap:.5em;align-items:center}
+.fasttotal b{background:linear-gradient(#0b2a8a,#04155a);border:.08em solid var(--gold-2);border-radius:.2em;padding:0 .5em;min-width:2.5em;text-align:center}
+.fasttotal.win b{background:var(--gold-1);color:#04155a}
+.fastwho{font-family:"Oswald",sans-serif;font-size:1.2em;opacity:.9}
+
+/* Lobby */
+.lobby{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:3vw;align-items:start}
+.lobby .qr{width:clamp(150px,26vh,330px);border-radius:8px;background:#fff;padding:6px;display:block}
+.joinrow{display:flex;gap:1.2em;align-items:center}
+.bigcode{font-family:"Anton",sans-serif;font-size:3em;color:var(--gold-1);letter-spacing:.14em;line-height:1;margin:.1em 0}
+.plist{list-style:none;padding:0;margin:.3em 0;display:grid;gap:.3em}
+.plist li{display:flex;align-items:center;gap:.6em}
+.plist .dot{width:.6em;height:.6em;border-radius:50%;background:#7CFC9A;flex:none}
+.plist li.away .dot{background:#555}
+.plist .n{flex:1}
+.plist .btn{font-size:.65em}
+.rules{font-size:.72em;opacity:.8;line-height:1.35}
+.gamepick{display:flex;gap:.5em}
+.gamepick .btn.on{background:linear-gradient(#ffe48a,#e0a800);color:#04155a;border-color:#ffe48a}
+.picklist{display:flex;flex-wrap:wrap;gap:.6em;margin-top:.6em}
+@media (max-aspect-ratio:1/1){body{overflow:auto;height:auto}.stage{height:auto;min-height:100vh}.lobby{grid-template-columns:1fr}.families{padding-right:0}.join{position:static;justify-content:center}}
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+  <header class="top">
+    <div class="logo"><small>Family</small>Face-Off</div>
+    <div class="roundinfo" id="roundInfo"></div>
+    <div class="tools">
+      <button class="btn" id="btnStrike" hidden>Give a strike</button>
+      <button class="btn" id="btnLobby">Lobby</button>
+      <button class="btn" id="btnSound">Sound on</button>
+      <button class="btn" id="btnFull">Full screen</button>
+    </div>
+  </header>
+
+  <section class="center">
+    <div class="bank" id="bank">0</div>
+    <div class="question" id="question"></div>
+    <div class="boardwrap"><div class="board" id="board"></div></div>
+    <div class="faceoff" id="faceoff" hidden></div>
+    <div class="strikes" id="strikes"></div>
+    <p class="msg" id="msg" aria-live="polite"></p>
+    <div class="clockrow" id="clockRow" hidden><div class="clock" id="clock"><i id="clockBar"></i></div><b class="clocknum" id="clockNum"></b></div>
+    <div class="fix" id="fix" hidden></div>
+    <div class="actions" id="actions"></div>
+  </section>
+
+  <footer class="families" id="families"></footer>
+  <div class="join" id="joinBadge"><div>Join on your phone<br><span id="joinUrl"></span><br><span class="code" id="joinCode"></span></div><img id="joinQr" alt="QR code to join"></div>
+</main>
+
+<section class="fast" id="fastView" hidden>
+  <h2>FAST MONEY</h2>
+  <div class="fastwho" id="fastWho"></div>
+  <div class="fq" id="fastQ"></div>
+  <div class="clockrow" id="fastClock"><b class="clocknum" id="fastNum" style="font-size:3em;width:auto"></b></div>
+  <div class="fastboard"><div class="fastcol" id="fastA"></div><div class="fastcol" id="fastB"></div></div>
+  <div class="fasttotal" id="fastTotal">TOTAL <b id="fastSum">0</b></div>
+  <p class="msg" id="fastMsg"></p>
+  <div class="actions" id="fastActions"></div>
+</section>
+
+<div class="bigx" id="bigX"></div>
+
+<div class="overlay" id="ovConnect"><div class="card"><h2>Connecting…</h2><p id="connectText">Finding the game server.</p></div></div>
+<div class="overlay" id="ovBusy" hidden><div class="card">
+  <h2>A game is already on another screen</h2>
+  <p>Only one game runs at a time. Show it here instead? The other screen stops showing it and everyone keeps their scores.</p>
+  <div class="actions"><button class="btn primary" id="takeover">Show the game here</button></div>
+</div></div>
+
+<div class="overlay" id="ovLobby" hidden><div class="card wide">
+  <div class="lobby">
+    <section>
+      <h2>Grab your phones</h2>
+      <div class="joinrow">
+        <img class="qr" id="lobbyQr" alt="QR code to join">
+        <div><p>Scan the code, or go to <span id="lobbyUrl" style="opacity:.8"></span> and type</p><p class="bigcode" id="lobbyCode"></p></div>
+      </div>
+      <h3 id="plistTitle">Players</h3>
+      <ul class="plist" id="plist"></ul>
+    </section>
+    <section>
+      <h2>Settings</h2>
+      <h3>Game</h3>
+      <div class="gamepick"><button class="btn" id="toHangman">Hangman</button><button class="btn on">Family Face-Off</button></div>
+      <h3>Play to</h3>
+      <select class="field" id="target" style="max-width:10em"><option value="200">200 points</option><option value="300">300 points</option><option value="500">500 points</option></select>
+      <h3>Options</h3>
+      <label class="choice"><input type="checkbox" id="timerOn"> Shot clock: 20 seconds per answer (face-off and steals are always timed)</label>
+      <p class="rules">Every player is their own family. Everyone buzzes in on their phone; the first two face off, and the better answer wins the board. Play or pass, then keep answering until the board is cleared or you get three strikes. Then everyone else gets one answer to steal the points. Round 3 is double points and round 4 on is triple. The first family to the target plays Fast Money with a partner: five quick questions each, and 200 points wins.</p>
+      <p class="err" id="lobbyErr"></p>
+      <div class="actions"><button class="btn primary" id="startGame">Start the game</button></div>
+    </section>
+  </div>
+</div></div>
+
+<div class="overlay" id="ovPick" hidden><div class="card">
+  <h2 id="pickTitle"></h2>
+  <p>They pick on their phone, or tap a name here.</p>
+  <div class="picklist" id="pickList"></div>
+</div></div>
+
+<div class="overlay" id="ovChamp" hidden><div class="card">
+  <h2 id="champTitle"></h2>
+  <p id="champFast" style="font-size:1.2em;color:var(--gold-1)"></p>
+  <ol class="podium" id="podium"></ol>
+  <div class="actions"><button class="btn primary" id="newGame">New game</button></div>
+</div></div>
+
+<canvas id="confetti" aria-hidden="true" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:40"></canvas>
+<script src="/sound.js"></script>
+<script src="/feud-tv.js"></script>
+</body>
+</html>

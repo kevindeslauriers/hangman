@@ -7,7 +7,7 @@
 <title>Hangman</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Cabin+Sketch:wght@400;700&family=Oswald:wght@400;600&family=Patrick+Hand&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 <style>
 body{height:auto;min-height:100%;background:var(--board-2);font-size:20px}
@@ -46,10 +46,40 @@ body{height:auto;min-height:100%;background:var(--board-2);font-size:20px}
 .toast{color:var(--pink);margin:0;min-height:1.2em}
 .small{font-size:.85em;color:var(--chalk-soft)}
 .leave{margin-top:auto;align-self:flex-start;font-size:.8em!important;padding:.2em .7em!important}
+/* Family Face-Off look; the colours and buttons come from feud.css */
+body.feud #app{background:transparent}
+body.feud .title,body.feud .turn{font-family:"Anton",sans-serif;font-weight:400;letter-spacing:.03em;text-transform:uppercase}
+body.feud .turn.mine,body.feud .title{color:var(--gold-1)}
+body.feud .scores,body.feud .small,body.feud .status{color:#bcd0ff}
+body.feud .scores b{color:var(--gold-1)}
+body.feud .scores .now{color:#fff;text-decoration:underline var(--gold-1) 3px}
+body.feud .msg{color:var(--gold-1)}
+body.feud .clock{font-family:"Anton",sans-serif;color:#fff}
+body.feud .clock.low{color:var(--red)}
+body.feud .toast{color:#ff9aa8}
+body.feud .me b{color:var(--gold-1)}
+.q{font-weight:600;font-size:1.15em;margin:0;line-height:1.25}
+.q.big{font-size:1.5em}
+.xs{font-family:"Anton",sans-serif;color:var(--red);font-size:2em;margin:0;line-height:1;min-height:1em;letter-spacing:.2em}
+.bigbuzz{align-self:center;width:min(70vw,260px);aspect-ratio:1;border-radius:50%;border:8px solid #fff;cursor:pointer;
+  background:radial-gradient(circle at 40% 35%,#ff7a84,#d0001b 60%,#7a0010);color:#fff;font-family:"Anton",sans-serif;font-size:3em;letter-spacing:.06em;
+  box-shadow:0 10px 0 #5a000b,0 16px 30px rgba(0,0,0,.5);touch-action:manipulation}
+.bigbuzz:active{transform:translateY(8px);box-shadow:0 2px 0 #5a000b,0 6px 14px rgba(0,0,0,.5)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn.big{font-size:1.4em!important;padding:.6em!important}
+.mini{list-style:none;padding:8px;margin:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(4,auto);gap:5px;
+  background:linear-gradient(#ffe9a3,#b8860b);border-radius:10px}
+.mini li{display:flex;justify-content:space-between;align-items:center;gap:6px;background:linear-gradient(#2e64ff,#0b2fa8);border-radius:5px;
+  padding:4px 8px;font-family:"Anton",sans-serif;font-size:.8em;min-height:2em;color:#bcd0ff}
+.mini li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini li.on{color:#fff}
+.mini li.off{background:linear-gradient(#22356f,#16245a);color:#c9d5ff}
 </style>
+<link rel="stylesheet" href="/feud.css" id="feudCss" disabled>
 </head>
 <body>
 <div id="app"></div>
+<script src="/feud-phone.js"></script>
 <script src="/phone.js"></script>
 </body>
 </html>

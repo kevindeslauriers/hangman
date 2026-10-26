@@ -14,12 +14,15 @@ function connect(takeover) {
     if (m.t === 'host') { V.hostKey = m.hostKey; try { localStorage.setItem('hangman-host', m.hostKey); } catch (e) {} $('#ovBusy').hidden = true; $('#ovConnect').hidden = true; }
     else if (m.t === 'busy') { $('#ovConnect').hidden = true; showBusy(false); }
     else if (m.t === 'replaced') { V.replaced = true; showBusy(true); }
-    else if (m.t === 'state') render(m.view);
+    else if (m.t === 'state') {
+      if (m.view.game === 'feud') { V.leaving = true; location.replace('/feud-tv'); return; }
+      render(m.view);
+    }
     else if (m.t === 'fx') onFx(m);
     else if (m.t === 'error') toast(m.msg);
   };
   ws.onclose = () => {
-    if (V.ws !== ws || V.replaced) return;
+    if (V.ws !== ws || V.replaced || V.leaving) return;
     $('#ovConnect').hidden = false;
     $('#connectText').textContent = 'Lost the game server. Reconnecting…';
     setTimeout(() => connect(false), Math.min(8000, 500 * 2 ** retry++));
@@ -235,6 +238,7 @@ $('#timerOn').onchange = e => setting({ timerOn: e.target.checked });
 $('#target').onchange = e => setting({ target: +e.target.value });
 $('#startGame').onclick = () => { unlockAudio(); cmd('start'); };
 $('#resetScores').onclick = () => cmd('resetScores');
+$('#toFeud').onclick = () => cmd('switchGame', { to: 'feud' });
 
 /* ---------- round over and champion ---------- */
 function renderEnd(v) {
