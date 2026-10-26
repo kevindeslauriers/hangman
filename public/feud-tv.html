@@ -10,7 +10,8 @@
 <link rel="stylesheet" href="/feud.css">
 <style>
 body{font-size:clamp(14px,1.5vw,30px);overflow:hidden;height:100vh}
-.stage{height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:1.2vh;padding:1.6vh 2vw 1.2vh;position:relative}
+/* --th is the height of one board row; everything on the board scales from it */
+.stage{--th:clamp(34px,7.6vh,104px);height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:1vh;padding:1.6vh 2vw 1.2vh;position:relative}
 .top{display:flex;align-items:center;gap:2vw}
 .top .logo{font-size:clamp(18px,1.9vw,38px)}
 .roundinfo{font-family:"Anton",sans-serif;font-size:1.3em;letter-spacing:.06em;color:var(--gold-1);text-transform:uppercase}
@@ -18,25 +19,27 @@ body{font-size:clamp(14px,1.5vw,30px);overflow:hidden;height:100vh}
 .tools{margin-left:auto;display:flex;gap:.5em;flex-wrap:wrap;justify-content:flex-end}
 .tools .btn{font-size:.65em}
 
-.center{display:flex;flex-direction:column;align-items:center;gap:1.2vh;min-height:0}
-.bank{font-family:"Anton",sans-serif;font-size:3.2em;line-height:1;min-width:3.4em;text-align:center;padding:.12em .5em;
+.center{display:flex;flex-direction:column;align-items:center;gap:1vh;min-height:0}
+.bankrow{position:relative;display:flex;justify-content:center}
+.bank{font-family:"Anton",sans-serif;font-size:calc(var(--th)*.8);line-height:1;min-width:3.4em;text-align:center;padding:.12em .5em;
   background:linear-gradient(#0b2a8a,#04155a);border:.12em solid var(--gold-2);border-radius:.25em;box-shadow:0 0 0 .08em #000,0 .3em 1em rgba(0,0,0,.6);color:#fff}
-.question{font-family:"Oswald",sans-serif;font-weight:600;font-size:1.55em;text-align:center;max-width:70vw;min-height:1.3em;line-height:1.2;text-shadow:0 .08em .2em #000}
-.boardwrap{width:min(1400px,78vw);flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-.board{flex:1 1 auto;min-height:0}
-.board .tile{min-height:0}
-.board .tile .num{font-size:min(2.8em,5vh)}
-.board .tile .txt{font-size:min(1.9em,4.6vh)}
-.board .tile .pts{font-size:min(2em,4.8vh)}
-.strikes{display:flex;gap:.4em;height:1.6em;justify-content:center}
-.strikes span{font-family:"Anton",sans-serif;font-size:1.6em;line-height:1;color:var(--red);text-shadow:0 0 .2em #000,0 0 .05em #fff}
-.msg{font-family:"Oswald",sans-serif;font-size:1.3em;text-align:center;margin:0;min-height:1.3em;color:var(--gold-1);text-shadow:0 .08em .2em #000}
-.clock{width:min(700px,50vw);height:.55em;border:2px solid rgba(255,255,255,.4);border-radius:1em;overflow:hidden;position:relative}
+.question{font-family:"Oswald",sans-serif;font-weight:600;font-size:clamp(16px,3.4vh,1.55em);text-align:center;max-width:70vw;min-height:1.3em;line-height:1.2;text-shadow:0 .08em .2em #000}
+.boardwrap{width:min(1400px,78vw);flex:none}
+.board{grid-template-rows:repeat(4,var(--th));grid-auto-flow:column}
+.board .tile{min-height:0;height:var(--th)}
+.board .tile .num{font-size:calc(var(--th)*.5)}
+.board .tile .txt{font-size:calc(var(--th)*.5)}
+.board .tile .pts{font-size:calc(var(--th)*.52)}
+.strikes{position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:.5em;display:flex;gap:.25em;white-space:nowrap}
+.strikes span{font-family:"Anton",sans-serif;font-size:calc(var(--th)*.75);line-height:1;color:var(--red);text-shadow:0 0 .2em #000,0 0 .05em #fff}
+.statusrow{display:flex;align-items:center;justify-content:center;gap:1.5em;flex-wrap:wrap;min-height:1.6em}
+.msg{font-family:"Oswald",sans-serif;font-size:clamp(14px,2.8vh,1.3em);text-align:center;margin:0;min-height:1.3em;color:var(--gold-1);text-shadow:0 .08em .2em #000}
+.clock{width:min(560px,36vw);height:.55em;border:2px solid rgba(255,255,255,.4);border-radius:1em;overflow:hidden;position:relative}
 .clock i{display:block;height:100%;background:linear-gradient(90deg,var(--gold-1),var(--gold-2));transform-origin:left}
 .clock.low i{background:var(--red)}
 .clockrow{display:flex;align-items:center;gap:.7em;min-height:1.6em}
 .clocknum{font-family:"Anton",sans-serif;font-size:1.5em;width:1.6em;text-align:right}
-.faceoff{display:flex;gap:2vw;align-items:center;justify-content:center;min-height:2.6em}
+.faceoff{display:flex;gap:2vw;align-items:center;justify-content:center;font-size:clamp(12px,2.2vh,1em)}
 .faceoff .side{font-family:"Oswald",sans-serif;text-align:center;min-width:12em}
 .faceoff .side b{display:block;font-family:"Anton",sans-serif;font-size:1.5em;letter-spacing:.04em}
 .faceoff .side.now b{color:var(--gold-1)}
@@ -122,14 +125,15 @@ body{font-size:clamp(14px,1.5vw,30px);overflow:hidden;height:100vh}
   </header>
 
   <section class="center">
-    <div class="bank" id="bank">0</div>
+    <div class="bankrow"><div class="bank" id="bank">0</div><div class="strikes" id="strikes"></div></div>
     <div class="question" id="question"></div>
     <div class="boardwrap"><div class="board" id="board"></div></div>
     <div class="faceoff" id="faceoff" hidden></div>
-    <div class="strikes" id="strikes"></div>
     <p class="msg" id="msg" aria-live="polite"></p>
-    <div class="clockrow" id="clockRow" hidden><div class="clock" id="clock"><i id="clockBar"></i></div><b class="clocknum" id="clockNum"></b></div>
-    <div class="fix" id="fix" hidden></div>
+    <div class="statusrow">
+      <div class="clockrow" id="clockRow" hidden><div class="clock" id="clock"><i id="clockBar"></i></div><b class="clocknum" id="clockNum"></b></div>
+      <div class="fix" id="fix" hidden></div>
+    </div>
     <div class="actions" id="actions"></div>
   </section>
 

@@ -121,8 +121,6 @@ function renderBoard(v) {
   if (newQ || !b.children.length) {
     V.qText = v.question; V.open = new Set();
     b.innerHTML = '';
-    b.style.gridTemplateRows = 'repeat(4,1fr)';
-    b.style.gridAutoFlow = 'column';
     for (let i = 0; i < 8; i++) {
       const t = el('div', 'tile');
       const front = el('div', 'face front'), back = el('div', 'face back');

@@ -139,6 +139,9 @@ test('the TV can make a missed answer count', () => {
   g.override(3);
   assert.equal(g.strikes, 0);
   assert.equal(g.bank, 48);
+  g.forceStrike();
+  assert.equal(g.lastMiss, null, 'nothing to credit after a time-out or a forced strike');
+  assert.throws(() => g.override(4), FeudError);
 });
 
 test('clearing the board wins it; later rounds are doubled and tripled', () => {
