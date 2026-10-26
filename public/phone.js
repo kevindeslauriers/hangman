@@ -61,9 +61,12 @@ function render() {
   const v = P.view;
   if (v && v.phase !== P.phase) { ['secret', 'secretHint', 'solve', 'fa'].forEach(k => { delete P.drafts[k]; }); P.phase = v.phase; }
   const feud = !!(v && v.game === 'feud');
+  const wheel = !!(v && v.game === 'wheel');
   document.body.classList.toggle('feud', feud);
+  document.body.classList.toggle('wheel', wheel);
   document.getElementById('feudCss').disabled = !feud;
-  document.title = feud ? 'Family Face-Off' : 'Hangman';
+  document.getElementById('wheelCss').disabled = !wheel;
+  document.title = feud ? 'Family Face-Off' : wheel ? 'Spin & Solve' : 'Hangman';
   el.innerHTML = '';
   if (P.status) el.append(h('p', { className: 'status', textContent: P.status }));
 
@@ -75,6 +78,7 @@ function render() {
       el.append(h('div', { className: 'me' }, h('span', { textContent: me.name }), h('span', {}, 'Score ', h('b', { textContent: String(me.score) }))));
       if (v.phase === 'lobby') el.append(lobbyScreen(v));
       else if (feud) el.append(...feudScreen(v));
+      else if (wheel) el.append(...wheelScreen(v));
       else if (v.phase === 'secret') el.append(secretScreen(v));
       else if (v.phase === 'play') el.append(...playScreen(v));
       else if (v.phase === 'end') el.append(endScreen(v));
@@ -85,7 +89,7 @@ function render() {
   }
   if (actId) { const n = document.getElementById(actId); if (n) { n.focus({ preventScroll: true }); try { if (selS != null) n.setSelectionRange(selS, selE); } catch (e) {} } }
 
-  const myTurn = !!(v && !feud && v.phase === 'play' && v.turnId === P.me);
+  const myTurn = !!(v && !feud && !wheel && v.phase === 'play' && v.turnId === P.me);
   if (myTurn && !P.wasTurn) buzz([80, 60, 80]);
   P.wasTurn = myTurn;
   setClock(v);
@@ -121,6 +125,7 @@ function lobbyScreen(v) {
     h('p', { textContent: 'Waiting for the TV to start the game.' }),
     h('p', { className: 'small', textContent: `Playing: ${v.players.map(p => p.name).join(', ')}` }),
     v.game === 'feud' ? h('p', { className: 'small', textContent: 'Game: Family Face-Off' })
+      : v.game === 'wheel' ? h('p', { className: 'small', textContent: 'Game: Spin & Solve' })
       : v.themeName ? h('p', { className: 'small', textContent: `Theme: ${v.themeName}` }) : null);
 }
 
@@ -214,7 +219,7 @@ function champScreen(v) {
 
 /* ---------- shot clock ---------- */
 function setClock(v) {
-  P.clock = v && v.timer && (v.phase === 'play' || v.game === 'feud') ? { mode: v.timer.mode, end: Date.now() + v.timer.remaining } : null;
+  P.clock = v && v.timer && (v.phase === 'play' || v.game === 'feud' || v.game === 'wheel') ? { mode: v.timer.mode, end: Date.now() + v.timer.remaining } : null;
   tick();
 }
 function tick() {

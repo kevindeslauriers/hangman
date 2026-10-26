@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spin &amp; Solve</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/wheel.css">
+<style>
+body{font-size:clamp(14px,1.45vw,30px);overflow:hidden;height:100vh}
+.stage{height:100vh;display:grid;grid-template-rows:auto auto auto minmax(0,1fr);gap:1.1vh;padding:1.4vh 2vw 1.2vh;position:relative}
+.top{display:flex;align-items:center;gap:2vw}
+.top .logo{font-size:clamp(16px,1.6vw,34px)}
+.roundinfo{font-family:"Anton",sans-serif;font-size:1.3em;letter-spacing:.06em;color:var(--gold);text-transform:uppercase}
+.roundinfo span{color:#fff;background:var(--red);padding:.05em .5em;border-radius:.3em;margin-left:.5em}
+.tools{margin-left:auto;display:flex;gap:.5em;flex-wrap:wrap;justify-content:flex-end}
+.tools .btn{font-size:.65em}
+/* Board width follows the height too, so it never crowds the wheel */
+.pboard{justify-self:center;width:min(80vw,96vh);--gap:min(.35vw,.6vh);--pad:min(.9vw,1.6vh)}
+.pc{font-size:min(3.3vw,5.6vh)}
+.category{justify-self:center;font-size:min(1.6em,3.4vh)}
+.lower{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2vw;align-items:center;min-height:0}
+.wheelwrap{position:relative;height:min(46vh,40vw);aspect-ratio:1;transition:transform .7s cubic-bezier(.3,1.2,.5,1);transform-origin:50% 50%;z-index:6}
+.wheelwrap.big{transform:translate(var(--bx,0),var(--by,0)) scale(1.65)}
+.wheelwrap #wheel{width:100%;height:100%;display:block;filter:drop-shadow(0 1vh 2vh rgba(0,0,0,.6))}
+.pointer{position:absolute;left:50%;top:-3%;width:9%;transform:translateX(-50%);transform-origin:50% 20%;z-index:2;filter:drop-shadow(0 .3vh .4vh rgba(0,0,0,.6))}
+.pointer.flick{animation:flick .09s ease-out}
+@keyframes flick{0%{transform:translateX(-50%) rotate(0)}40%{transform:translateX(-50%) rotate(-14deg)}100%{transform:translateX(-50%) rotate(0)}}
+.side{display:flex;flex-direction:column;gap:1.4vh;align-items:center;min-width:0}
+.pods{display:flex;gap:1.2vw;flex-wrap:wrap;justify-content:center;margin-top:1.2em}
+.msg{font-family:"Oswald",sans-serif;font-size:clamp(14px,2.8vh,1.3em);text-align:center;margin:0;min-height:1.3em;color:var(--gold);text-shadow:0 .08em .2em #000}
+.usedboard{display:grid;grid-template-columns:repeat(13,1fr);gap:.3em;font-family:"Anton",sans-serif;font-size:min(1.25em,2.8vh)}
+.usedboard span{width:1.5em;text-align:center;border-radius:.2em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25)}
+.usedboard span.v{background:rgba(255,210,63,.18)}
+.usedboard span.u{opacity:.18;text-decoration:line-through}
+.status{display:flex;gap:1em;align-items:center;justify-content:center;flex-wrap:wrap;min-height:2em}
+.clock{font-family:"Anton",sans-serif;font-size:1.6em;min-width:2.5em;text-align:center;color:#fff}
+.clock.low{color:#ff6b75}
+.banner{font-family:"Anton",sans-serif;font-size:2.4em;letter-spacing:.06em;color:var(--gold);text-shadow:0 .06em 0 #6b4a00,0 .2em .4em #000;text-transform:uppercase;line-height:1}
+.landed{font-family:"Anton",sans-serif;font-size:2em;padding:.05em .6em;border-radius:.3em;background:#fff;color:#2a0a5e}
+.landed.bad{background:#000;color:#fff}
+.join{position:absolute;right:2vw;bottom:1.2vh;display:flex;align-items:center;gap:.6em;font-size:.7em;text-align:right;z-index:1}
+.join img{width:clamp(56px,6.5vw,120px);border-radius:6px;background:#fff;padding:3px}
+.join .code{font-family:"Anton",sans-serif;font-size:2.2em;letter-spacing:.12em;color:var(--gold);line-height:1}
+.dim{position:fixed;inset:0;background:rgba(10,2,30,.55);z-index:5;opacity:0;pointer-events:none;transition:opacity .5s}
+.dim.on{opacity:1}
+.lobby{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:3vw;align-items:start}
+.lobby .qr{width:clamp(150px,26vh,330px);border-radius:8px;background:#fff;padding:6px;display:block}
+.joinrow{display:flex;gap:1.2em;align-items:center}
+.bigcode{font-family:"Anton",sans-serif;font-size:3em;color:var(--gold);letter-spacing:.14em;line-height:1;margin:.1em 0}
+.plist{list-style:none;padding:0;margin:.3em 0;display:grid;gap:.3em}
+.plist li{display:flex;align-items:center;gap:.6em}
+.plist .dot{width:.6em;height:.6em;border-radius:50%;background:#7CFC9A;flex:none}
+.plist li.away .dot{background:#555}
+.plist .n{flex:1}
+.plist .btn{font-size:.65em}
+.rules{font-size:.72em;opacity:.85;line-height:1.35}
+.gamepick{display:flex;gap:.5em;flex-wrap:wrap}
+.gamepick .btn.on{background:linear-gradient(#ffe48a,#e0a800);color:#2a0a5e;border-color:#fff2b8}
+.prize{font-family:"Anton",sans-serif;font-size:3em;color:var(--gold)}
+#confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:40}
+@media (max-aspect-ratio:1/1){body{overflow:auto;height:auto}.stage{height:auto}.lower{grid-template-columns:1fr;justify-items:center}.lobby{grid-template-columns:1fr}.join{position:static}}
+</style>
+</head>
+<body>
+<main class="stage">
+  <header class="top">
+    <div class="logo"><small>Spin &amp;</small>Solve</div>
+    <div class="roundinfo" id="roundInfo"></div>
+    <div class="tools">
+      <button class="btn" id="btnSkip" hidden>Skip turn</button>
+      <button class="btn" id="btnLobby">Lobby</button>
+      <button class="btn" id="btnVoice">Host voice on</button>
+      <button class="btn" id="btnSound">Sound on</button>
+      <button class="btn" id="btnFull">Full screen</button>
+    </div>
+  </header>
+  <div class="pboard" id="pboard"></div>
+  <div class="category" id="category">&nbsp;</div>
+  <section class="lower">
+    <div class="wheelwrap" id="wheelWrap">
+      <svg class="pointer" id="pointer" viewBox="0 0 40 50"><path d="M20 48 L4 6 Q20 -2 36 6 Z" fill="#e3262f" stroke="#fff" stroke-width="3"/></svg>
+      <svg id="wheel" viewBox="-520 -520 1040 1040" aria-label="The wheel"><g id="wheelRot"></g></svg>
+    </div>
+    <div class="side">
+      <div class="status"><div class="banner" id="banner"></div><div class="landed" id="landed" hidden></div><div class="clock" id="clock"></div></div>
+      <p class="msg" id="msg" aria-live="polite"></p>
+      <div class="pods" id="pods"></div>
+      <div class="usedboard" id="usedBoard"></div>
+      <div class="status" id="actions"></div>
+    </div>
+  </section>
+  <div class="join" id="joinBadge"><div>Join on your phone<br><span id="joinUrl"></span><br><span class="code" id="joinCode"></span></div><img id="joinQr" alt="QR code to join"></div>
+</main>
+<div class="dim" id="dim"></div>
+
+<div class="overlay" id="ovConnect"><div class="card"><h2>Connecting…</h2><p id="connectText">Finding the game server.</p></div></div>
+<div class="overlay" id="ovBusy" hidden><div class="card">
+  <h2>A game is already on another screen</h2>
+  <p>Only one game runs at a time. Show it here instead? The other screen stops showing it and everyone keeps their scores.</p>
+  <div class="actions"><button class="btn primary" id="takeover">Show the game here</button></div>
+</div></div>
+
+<div class="overlay" id="ovLobby" hidden><div class="card wide">
+  <div class="lobby">
+    <section>
+      <h2>Grab your phones</h2>
+      <div class="joinrow">
+        <img class="qr" id="lobbyQr" alt="QR code to join">
+        <div><p>Scan the code, or go to <span id="lobbyUrl" style="opacity:.8"></span> and type</p><p class="bigcode" id="lobbyCode"></p></div>
+      </div>
+      <h3 id="plistTitle">Players</h3>
+      <ul class="plist" id="plist"></ul>
+    </section>
+    <section>
+      <h2>Settings</h2>
+      <h3>Game</h3>
+      <div class="gamepick"><button class="btn" data-game="hangman">Hangman</button><button class="btn" data-game="feud">Family Face-Off</button><button class="btn on">Spin &amp; Solve</button></div>
+      <h3>Rounds</h3>
+      <select class="field" id="rounds" style="max-width:10em"><option value="2">2 rounds</option><option value="3">3 rounds</option><option value="4">4 rounds</option><option value="5">5 rounds</option></select>
+      <h3>Options</h3>
+      <label class="choice"><input type="checkbox" id="tossups"> Toss-ups: a quick puzzle to buzz in on before each round</label>
+      <label class="choice"><input type="checkbox" id="bonus"> Bonus Round for the winner at the end</label>
+      <label class="choice"><input type="checkbox" id="timerOn"> Shot clock: 15 seconds a turn, 10 to call a letter</label>
+      <p class="rules">On your turn: spin the wheel (press and hold SPIN on your phone, then let go) and call a consonant for the money on that wedge, times each one in the puzzle. Vowels cost $250. Solve whenever you know it. Bankrupt wipes your round money and Lose a Turn passes play. Only the player who solves banks their round money (at least $1,000). Puzzles come from the Game Night theme.</p>
+      <p class="err" id="lobbyErr"></p>
+      <div class="actions"><button class="btn primary" id="startGame">Start the game</button></div>
+    </section>
+  </div>
+</div></div>
+
+<div class="overlay" id="ovChamp" hidden><div class="card">
+  <h2 id="champTitle"></h2>
+  <ol class="podium" id="podium"></ol>
+  <div class="actions"><button class="btn primary" id="newGame">New game</button></div>
+</div></div>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<script src="/sound.js"></script>
+<script src="/feud-sounds.js"></script>
+<script src="/wheel-sounds.js"></script>
+<script src="/wheel-tv.js"></script>
+</body>
+</html>

@@ -74,13 +74,41 @@ body.feud .me b{color:var(--gold-1)}
 .mini li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mini li.on{color:#fff}
 .mini li.off{background:linear-gradient(#22356f,#16245a);color:#c9d5ff}
+/* Spin & Solve look; colours and buttons come from wheel.css */
+body.wheel #app{background:transparent}
+body.wheel .title,body.wheel .turn{font-family:"Anton",sans-serif;font-weight:400;letter-spacing:.03em;text-transform:uppercase}
+body.wheel .turn.mine,body.wheel .title{color:var(--gold)}
+body.wheel .scores,body.wheel .small,body.wheel .status{color:#dcc8ff}
+body.wheel .scores b,body.wheel .me b,body.wheel .msg{color:var(--gold)}
+body.wheel .scores .now{color:#fff;text-decoration:underline var(--gold) 3px}
+body.wheel .clock{font-family:"Anton",sans-serif;color:#fff}
+body.wheel .clock.low{color:#ff6b75}
+body.wheel .toast{color:#ff9aa8}
+body.wheel .keys .key{background:#fff;color:#2a0a5e;border:2px solid #c9a7ff;font-family:"Anton",sans-serif;border-radius:8px}
+body.wheel .keys .key:disabled{opacity:.2}
+body.wheel .keys .key.hit{background:var(--gold);border-color:#fff}
+.mboard{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;padding:6px;border-radius:8px;background:linear-gradient(#1b46c4,#0b2577)}
+.mboard span{aspect-ratio:.78;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:"Anton",sans-serif;font-size:min(4.4vw,22px);color:#111;line-height:1}
+.mboard .off{visibility:hidden}
+.mboard .g{background:#18a957}
+.mboard .t{background:#fff}
+.bigspin{align-self:center;position:relative;overflow:hidden;width:min(72vw,270px);aspect-ratio:1;border-radius:50%;border:8px solid #fff;cursor:pointer;color:#fff;
+  background:conic-gradient(#e3262f,#f58220,#ffd200,#2eb34a,#1f6fd1,#7b3fa0,#ef5ba1,#e3262f);touch-action:none;user-select:none;-webkit-user-select:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 10px 0 #2a0a5e,0 16px 30px rgba(0,0,0,.5)}
+.bigspin span{font-family:"Anton",sans-serif;font-size:2.6em;text-shadow:0 3px 0 #000,0 0 12px #000;letter-spacing:.06em}
+.bigspin small{font-size:.75em;text-shadow:0 1px 3px #000}
+.bigspin .meter{position:absolute;left:12%;right:12%;bottom:16%;height:10px;border-radius:5px;background:#fff;transform-origin:left;transform:scaleX(0)}
+.bigspin:active{transform:translateY(6px)}
 </style>
 <link rel="stylesheet" href="/feud.css" id="feudCss" disabled>
+<link rel="stylesheet" href="/wheel.css" id="wheelCss" disabled>
 </head>
 <body>
 <div id="app"></div>
 <script src="/feud-sounds.js"></script>
+<script src="/wheel-sounds.js"></script>
 <script src="/feud-phone.js"></script>
+<script src="/wheel-phone.js"></script>
 <script src="/phone.js"></script>
 </body>
 </html>

@@ -8,6 +8,7 @@ const { WebSocketServer } = require('ws');
 const QRCode = require('qrcode');
 const { Game, GameError } = require('./lib/game');
 const { Feud, FeudError } = require('./lib/feud');
+const { Wheel, WheelError } = require('./lib/wheel');
 const { ThemeStore } = require('./lib/themes');
 const { SurveyStore } = require('./lib/survey');
 
@@ -40,7 +41,8 @@ function createServer({ gameOpts = {} } = {}) {
   const fx = f => broadcast({ t: 'fx', ...f });
   const game = new Game({ themes, onChange: scheduleState, fx, ...gameOpts });
   const feud = new Feud({ surveys, onChange: scheduleState, fx, ...gameOpts, code: game.code });
-  const games = { hangman: game, feud };
+  const wheel = new Wheel({ themes, onChange: scheduleState, fx, ...gameOpts, code: game.code });
+  const games = { hangman: game, feud, wheel };
   let mode = 'hangman';
   const cur = () => games[mode];
   const view = () => ({ ...cur().view(), game: mode });
@@ -80,7 +82,9 @@ function createServer({ gameOpts = {} } = {}) {
   app.get('/api/themes', (req, res) => res.json(themes.list()));
 
   // Recordings that replace Face-Off's built-in sounds (public/sounds/<name>.mp3).
-  const SOUND_NAMES = ['ding', 'strike', 'buzzin', 'flip', 'round', 'control', 'steal', 'win', 'keep', 'applause',
+  const SOUND_NAMES = ['wheel-tick', 'wheel-ding', 'wheel-buzz', 'wheel-bankrupt', 'wheel-loseturn', 'wheel-solve', 'wheel-round',
+    'wheel-tossup', 'wheel-buzzin', 'wheel-puzzle', 'wheel-vowel', 'wheel-bonus', 'wheel-bonuswin', 'wheel-bonuslose', 'wheel-wrong',
+    'ding', 'strike', 'buzzin', 'flip', 'round', 'control', 'steal', 'win', 'keep', 'applause',
     'fastStart', 'fastEnd', 'fastZero', 'dupe', 'champ', 'join', 'lock', 'tick', 'theme'];
   app.get('/api/sounds', (req, res) => {
     const dir = path.join(__dirname, 'public', 'sounds');
@@ -102,6 +106,36 @@ function createServer({ gameOpts = {} } = {}) {
     cur().remove(id);
   };
   const leave = (m, id, c) => { c.playerId = null; c.role = null; cur().remove(id); send(c.ws, { t: 'left' }); };
+
+  const WHEEL_TV = {
+    switchGame: m => switchGame(m.to),
+    settings: m => wheel.updateSettings(m.settings || {}),
+    start: () => wheel.start(),
+    lobby: () => wheel.toLobby(),
+    next: () => wheel.next(),
+    skip: () => { if (!wheel.turnPhase()) throw new WheelError('Nobody’s turn to skip.'); wheel.passTurn(`Skipped ${wheel.cur().name}.`); },
+    bonusPick: m => wheel.bonusPick(null, m.letters),
+    finish: () => wheel.finish(),
+    kick: m => kick(m.id),
+  };
+  const WHEEL_PHONE = {
+    spin: (m, id) => wheel.doSpin(id, m.power),
+    consonant: (m, id) => wheel.callConsonant(id, m.l),
+    buyVowel: (m, id) => wheel.buyVowel(id),
+    vowel: (m, id) => wheel.callVowel(id, m.l),
+    cancelPick: (m, id) => wheel.cancelPick(id),
+    solveStart: (m, id) => wheel.solveStart(id),
+    solveCancel: (m, id) => wheel.solveCancel(id),
+    solve: (m, id) => wheel.solve(id, m.a),
+    buzz: (m, id) => wheel.buzzToss(id),
+    tossSolve: (m, id) => wheel.solveToss(id, m.a),
+    next: () => wheel.next(),
+    bonusPick: (m, id) => wheel.bonusPick(id, m.letters),
+    bonusGuess: (m, id) => wheel.bonusGuess(id, m.a),
+    finish: () => wheel.finish(),
+    newGame: () => { if (wheel.phase !== 'champ') throw new WheelError('The game isn’t over.'); wheel.toLobby(); },
+    leave,
+  };
 
   const FEUD_TV = {
     switchGame: m => switchGame(m.to),
@@ -204,12 +238,12 @@ function createServer({ gameOpts = {} } = {}) {
       try {
         if (m.t === 'hello' && m.role === 'tv') return helloTv(c, m);
         if (m.t === 'hello' && m.role === 'phone') return helloPhone(c, m);
-        const tv = mode === 'feud' ? FEUD_TV : TV_CMDS;
-        const phone = mode === 'feud' ? FEUD_PHONE : PHONE_CMDS;
+        const tv = { feud: FEUD_TV, wheel: WHEEL_TV }[mode] || TV_CMDS;
+        const phone = { feud: FEUD_PHONE, wheel: WHEEL_PHONE }[mode] || PHONE_CMDS;
         if (c.role === 'tv' && tv[m.t]) return tv[m.t](m);
         if (c.role === 'phone' && c.playerId && phone[m.t]) return phone[m.t](m, c.playerId, c);
       } catch (e) {
-        if (e instanceof GameError || e instanceof FeudError) return send(ws, { t: 'error', msg: e.message });
+        if (e instanceof GameError || e instanceof FeudError || e instanceof WheelError) return send(ws, { t: 'error', msg: e.message });
         console.error(e);
         send(ws, { t: 'error', msg: 'Something went wrong.' });
       }
@@ -229,9 +263,9 @@ function createServer({ gameOpts = {} } = {}) {
     });
   }, 25000);
   beat.unref();
-  server.on('close', () => { clearInterval(beat); game.stopTimer(); feud.stopTimer(); });
+  server.on('close', () => { clearInterval(beat); game.stopTimer(); feud.stopTimer(); wheel.stopTimer(); wheel.stopStep(); });
 
-  return { server, game, feud, themes };
+  return { server, game, feud, wheel, themes };
 }
 
 module.exports = { createServer };

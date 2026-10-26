@@ -15,7 +15,7 @@ function connect(takeover) {
     else if (m.t === 'busy') { $('#ovConnect').hidden = true; $('#ovBusy').hidden = false; }
     else if (m.t === 'replaced') { V.replaced = true; $('#ovBusy').hidden = false; $('#ovBusy h2').textContent = 'The game moved to another screen'; }
     else if (m.t === 'state') {
-      if (m.view.game !== 'feud') { V.leaving = true; location.replace('/tv'); return; }
+      if (m.view.game !== 'feud') { V.leaving = true; location.replace(m.view.game === 'wheel' ? '/wheel-tv' : '/tv'); return; }
       if (V.busy) enqueue({ state: m.view }); else render(m.view);
     }
     else if (m.t === 'fx') onFx(m);
@@ -200,6 +200,7 @@ $('#target').onchange = e => cmd('settings', { settings: { target: +e.target.val
 $('#timerOn').onchange = e => cmd('settings', { settings: { timerOn: e.target.checked } });
 $('#startGame').onclick = () => { unlockFeudAudio(); cmd('start'); };
 $('#toHangman').onclick = () => cmd('switchGame', { to: 'hangman' });
+$('#toWheel').onclick = () => cmd('switchGame', { to: 'wheel' });
 
 /* ---------- Fast Money ---------- */
 function renderPick(v) {

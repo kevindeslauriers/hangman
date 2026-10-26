@@ -1,6 +1,6 @@
 # Game night
 
-Two party games for the TV: **Hangman** and **Family Face-Off** (a survey game show). The TV shows the board; everyone plays on their own phone. Switch games from the TV lobby.
+Three party games for the TV: **Hangman**, **Family Face-Off** (a survey game show) and **Spin & Solve** (a wheel-and-puzzle game show). The TV shows the board; everyone plays on their own phone. Switch games from the TV lobby.
 
 - **TV:** open `/tv` (full screen it). The lobby shows a QR code and a 4 letter code.
 - **Phones:** scan the QR code, or open the site and type the code and a name.
@@ -13,6 +13,16 @@ A right letter scores 1 point per spot and you go again. Three right in a row pu
 **Showtime:** whoever solves it gets a singing challenge. Everyone else votes on their phone (1 to 3) and the performer gets the average.
 
 **Secret phrase mode:** players take turns typing a phrase on their phone. The person who typed it sits that round out.
+
+## Spin & Solve
+
+Puzzles come from the Hangman themes (every phrase that fits the 4-row, 12/14/14/12 board), with the theme's category shown under the board.
+
+- **Toss-up** before each round: letters appear one at a time. Buzz in on your phone and solve to win cash ($1,000, $2,000, then $3,000) and start the round. A wrong answer locks you out of that toss-up.
+- **Your turn:** press and hold **SPIN** on your phone and let go (a longer hold spins harder). Call a consonant to win the wedge value for each one in the puzzle. Vowels cost $250. Solve any time on your turn. A missing letter, a wrong solve or running out of time passes play.
+- **Bankrupt** wipes your round money; **Lose a Turn** passes play. Only the player who solves banks their round money (at least $1,000).
+- After the last round (2 to 5, set in the lobby) the leader plays the **Bonus Round**: R S T L N E are given, they pick 3 more consonants and a vowel, then get 10 seconds (and as many guesses as they like) to solve for a mystery prize.
+- Sounds: pegs clicking as the wheel slows, a ding for every letter, the buzzer, the Bankrupt horn and a cash register for vowels; the host voice reads the category and counts the letters. Recordings named `wheel-<sound>.mp3` (`wheel-tick`, `wheel-ding`, `wheel-buzz`, `wheel-bankrupt`, `wheel-solve` and so on; see `public/wheel-sounds.js`) in `public/sounds/` replace them.
 
 ## Family Face-Off
 
