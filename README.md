@@ -1,6 +1,6 @@
 # Game night
 
-Three party games for the TV: **Hangman**, **Family Face-Off** (a survey game show) and **Spin & Solve** (a wheel-and-puzzle game show). The TV shows the board; everyone plays on their own phone. Switch games from the TV lobby.
+Four party games for the TV: **Hangman**, **Family Face-Off** (a survey game show), **Spin & Solve** (a wheel-and-puzzle game show) and **Answer Board** (a quiz-board game show). The TV shows the board; everyone plays on their own phone. Switch games from the TV lobby.
 
 - **TV:** open `/tv` (full screen it). The lobby shows a QR code and a 4 letter code.
 - **Phones:** scan the QR code, or open the site and type the code and a name.
@@ -13,6 +13,32 @@ A right letter scores 1 point per spot and you go again. Three right in a row pu
 **Showtime:** whoever solves it gets a singing challenge. Everyone else votes on their phone (1 to 3) and the performer gets the average.
 
 **Secret phrase mode:** players take turns typing a phrase on their phone. The person who typed it sits that round out.
+
+## Answer Board
+
+A quiz board tuned for families, not champions.
+
+- Six categories, five clues each ($200 to $1,000; the second board is doubled). The player in control picks a clue on their phone (the TV can pick too, by clicking a value).
+- The host reads the clue, then everyone races to **BUZZ**. Right answers win the money and control; after a wrong answer, anyone else can buzz. If nobody gets it, the answer is shown.
+- **Easy mode** (on by default): the player who buzzes taps one of four choices (the other answers in the category). Off: they type, with no need to say "What is…" and typos forgiven.
+- Wrong answers cost nothing unless **Wrong answers lose points** is on.
+- Hidden **Daily Doubles** (one on the first board, two on the second): the picker wagers $5 up to their score or the board's top value.
+- **Final round:** everyone secretly wagers on the category, then answers the clue in 30 seconds to an original thinking tune. Answers are revealed from last place up.
+- Options in the lobby: one or two boards, easy mode, wrong-answer penalty, final round. **End round** on the TV skips the rest of a board.
+
+### Clues
+
+Clues are `.txt` files in [`clues/`](clues):
+
+```
+## ANIMAL SOUNDS
+1 | This farm animal says "moo" | COW / COWS / CATTLE
+2 | ...
+5 | ...
+FINAL | SPACE | This is the closest star to Earth | THE SUN / SUN | THE NORTH STAR; THE MOON; SIRIUS
+```
+
+Each category has one clue at each level 1 (easiest, $200) to 5 ($1,000): level, clue, then the answer and other ways to say it after slashes. Keep a category's answers the same kind of thing, since they are the wrong choices in easy mode. A final clue lists its own three wrong choices. `npm test` checks every file.
 
 ## Spin & Solve
 

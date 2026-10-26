@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Answer Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Baskerville:wght@700&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/feud.css">
+<style>
+:root{--qblue:#0a1fb5;--qblue-d:#060f6e;--qgold:#ffcc33}
+body{font-size:clamp(14px,1.45vw,30px);overflow:hidden;height:100vh;
+  background:radial-gradient(ellipse at 50% 0%,#14207a 0%,#070b33 60%,#02030f 100%)}
+.stage{height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:1.2vh;padding:1.4vh 2vw 1.2vh;position:relative}
+.top{display:flex;align-items:center;gap:2vw}
+.top .logo{font-size:clamp(16px,1.6vw,34px);background:radial-gradient(ellipse at 50% 30%,#3a5bff,#0a1fb5 70%)}
+.roundinfo{font-family:"Anton",sans-serif;font-size:1.3em;letter-spacing:.06em;color:var(--qgold);text-transform:uppercase}
+.tools{margin-left:auto;display:flex;gap:.5em;flex-wrap:wrap;justify-content:flex-end}
+.tools .btn{font-size:.65em}
+
+/* The board: six categories, five values each */
+.qboard{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:1.25fr repeat(5,1fr);gap:.5vw;background:#000;padding:.5vw;border-radius:.4vw;min-height:0;
+  box-shadow:0 0 0 .3vw #1b2a8a,0 1vw 3vw rgba(0,0,0,.7)}
+.qcell{background:radial-gradient(ellipse at 50% 30%,#1c34e0,var(--qblue) 60%,var(--qblue-d));display:flex;align-items:center;justify-content:center;text-align:center;
+  box-shadow:inset 0 0 1.2vw rgba(0,0,0,.45);min-height:0;overflow:hidden;padding:.3em}
+.qcat{font-family:"Oswald",sans-serif;font-weight:600;color:#fff;font-size:min(1.15em,2.6vh);line-height:1.1;text-transform:uppercase;letter-spacing:.02em;text-shadow:.12em .12em 0 #000}
+.qval{font-family:"Anton",sans-serif;color:var(--qgold);font-size:min(3em,6.8vh);text-shadow:.07em .07em 0 #000;cursor:pointer;letter-spacing:.02em}
+.qcell.gone .qval{visibility:hidden}
+.qcell.pop{animation:pop .25s ease-out both}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:none}}
+
+/* The clue fills the screen */
+.clue{position:fixed;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vh;padding:6vh 8vw;
+  background:radial-gradient(ellipse at 50% 30%,#1c34e0,var(--qblue) 55%,var(--qblue-d));transform-origin:var(--ox,50%) var(--oy,50%)}
+.clue.zoom{animation:zoom .45s cubic-bezier(.2,.9,.3,1) both}
+@keyframes zoom{0%{transform:scale(.12);opacity:.6}100%{transform:none;opacity:1}}
+.clue .cat{font-family:"Oswald",sans-serif;font-weight:600;letter-spacing:.12em;color:#c9d3ff;font-size:1.2em;text-transform:uppercase}
+.clue .q{font-family:"Libre Baskerville",Georgia,serif;font-weight:700;color:#fff;text-transform:uppercase;text-align:center;line-height:1.35;
+  font-size:min(3.1em,6.4vh);text-shadow:.08em .08em 0 #000;max-width:80vw}
+.clue .a{font-family:"Anton",sans-serif;font-size:min(3.4em,8vh);color:var(--qgold);text-shadow:.06em .06em 0 #000;letter-spacing:.03em;text-align:center}
+.clue .who{font-family:"Oswald",sans-serif;font-size:1.4em;min-height:1.4em;text-align:center}
+.clue .who.right{color:#7CFC9A}.clue .who.wrong{color:#ff9aa8}
+.clue .bar{width:min(900px,60vw);height:1.1vh;border-radius:1vh;background:rgba(255,255,255,.18);overflow:hidden}
+.clue .bar i{display:block;height:100%;background:linear-gradient(90deg,#ff3b3b,#ffcc33);transform-origin:left}
+.clue .open{font-family:"Anton",sans-serif;letter-spacing:.1em;color:var(--qgold);font-size:1.3em;min-height:1.3em}
+.dd{font-family:"Anton",sans-serif;font-size:min(9em,17vh);line-height:.95;text-align:center;color:#fff;letter-spacing:.04em;
+  background:linear-gradient(#ffe48a,#ff7b00 50%,#c41818);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(.04em .04em 0 #000);animation:ddspin .9s cubic-bezier(.2,.9,.3,1) both}
+@keyframes ddspin{0%{transform:scale(.1) rotate(-540deg);opacity:0}100%{transform:none;opacity:1}}
+
+/* Podiums */
+.pods{display:flex;gap:1.2vw;justify-content:center;flex-wrap:wrap;padding-right:13vw}
+.pod{min-width:8.5em;text-align:center;border-radius:.4em;overflow:hidden;background:#0b1255;border:3px solid #2b3aa8;box-shadow:0 .2em .6em rgba(0,0,0,.6)}
+.pod .sc{font-family:"Anton",sans-serif;font-size:1.9em;line-height:1.1;background:linear-gradient(#1c34e0,var(--qblue-d));padding:.05em .4em;color:#fff}
+.pod .sc.neg{color:#ff6b6b}
+.pod .nm{font-family:"Oswald",sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:.25em .6em;white-space:nowrap}
+.pod.ctrl{border-color:var(--qgold)}
+.pod.lit{border-color:#fff;box-shadow:0 0 0 .2em #fff,0 0 2em rgba(255,255,255,.9)}
+.pod.tried{opacity:.45}
+.pod.away{opacity:.4}
+.pod .fx{font-size:.8em;padding:0 .4em .3em;min-height:1.3em;color:#c9d3ff}
+.msg{font-family:"Oswald",sans-serif;font-size:clamp(14px,2.6vh,1.2em);text-align:center;margin:0;min-height:1.3em;color:var(--qgold)}
+.join{position:absolute;right:2vw;bottom:1.2vh;display:flex;align-items:center;gap:.6em;font-size:.7em;text-align:right;z-index:9}
+.join img{width:clamp(56px,6.5vw,120px);border-radius:6px;background:#fff;padding:3px}
+.join .code{font-family:"Anton",sans-serif;font-size:2.2em;letter-spacing:.12em;color:var(--qgold);line-height:1}
+.lobby{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:3vw;align-items:start}
+.lobby .qr{width:clamp(150px,26vh,330px);border-radius:8px;background:#fff;padding:6px;display:block}
+.joinrow{display:flex;gap:1.2em;align-items:center}
+.bigcode{font-family:"Anton",sans-serif;font-size:3em;color:var(--gold-1);letter-spacing:.14em;line-height:1;margin:.1em 0}
+.plist{list-style:none;padding:0;margin:.3em 0;display:grid;gap:.3em}
+.plist li{display:flex;align-items:center;gap:.6em}
+.plist .dot{width:.6em;height:.6em;border-radius:50%;background:#7CFC9A;flex:none}
+.plist li.away .dot{background:#555}
+.plist .n{flex:1}
+.plist .btn{font-size:.65em}
+.rules{font-size:.72em;opacity:.85;line-height:1.35}
+.gamepick{display:flex;gap:.5em;flex-wrap:wrap}
+.gamepick .btn.on{background:linear-gradient(#ffe48a,#e0a800);color:#04155a;border-color:#ffe48a}
+#confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:40}
+@media (max-aspect-ratio:1/1){body{overflow:auto;height:auto}.stage{height:auto}.lobby{grid-template-columns:1fr}.pods{padding-right:0}.join{position:static}}
+</style>
+</head>
+<body>
+<main class="stage">
+  <header class="top">
+    <div class="logo"><small>Answer</small>Board</div>
+    <div class="roundinfo" id="roundInfo"></div>
+    <div class="tools">
+      <button class="btn" id="btnEnd" hidden>End round</button>
+      <button class="btn" id="btnLobby">Lobby</button>
+      <button class="btn" id="btnVoice">Host voice on</button>
+      <button class="btn" id="btnSound">Sound on</button>
+      <button class="btn" id="btnFull">Full screen</button>
+    </div>
+  </header>
+  <div class="qboard" id="qboard"></div>
+  <footer>
+    <p class="msg" id="msg"></p>
+    <div class="pods" id="pods"></div>
+  </footer>
+  <div class="join" id="joinBadge"><div>Join on your phone<br><span id="joinUrl"></span><br><span class="code" id="joinCode"></span></div><img id="joinQr" alt="QR code to join"></div>
+</main>
+
+<section class="clue" id="clue" hidden>
+  <div class="cat" id="clueCat"></div>
+  <div class="dd" id="clueDD" hidden>DAILY<br>DOUBLE</div>
+  <div class="q" id="clueQ"></div>
+  <div class="open" id="clueOpen"></div>
+  <div class="who" id="clueWho"></div>
+  <div class="a" id="clueA"></div>
+  <div class="bar" id="clueBar"><i id="clueBarFill"></i></div>
+</section>
+
+<div class="overlay" id="ovConnect"><div class="card"><h2>Connecting…</h2><p id="connectText">Finding the game server.</p></div></div>
+<div class="overlay" id="ovBusy" hidden><div class="card">
+  <h2>A game is already on another screen</h2>
+  <p>Only one game runs at a time. Show it here instead? The other screen stops showing it and everyone keeps their scores.</p>
+  <div class="actions"><button class="btn primary" id="takeover">Show the game here</button></div>
+</div></div>
+
+<div class="overlay" id="ovLobby" hidden><div class="card wide">
+  <div class="lobby">
+    <section>
+      <h2>Grab your phones</h2>
+      <div class="joinrow">
+        <img class="qr" id="lobbyQr" alt="QR code to join">
+        <div><p>Scan the code, or go to <span id="lobbyUrl" style="opacity:.8"></span> and type</p><p class="bigcode" id="lobbyCode"></p></div>
+      </div>
+      <h3 id="plistTitle">Players</h3>
+      <ul class="plist" id="plist"></ul>
+    </section>
+    <section>
+      <h2>Settings</h2>
+      <h3>Game</h3>
+      <div class="gamepick"><button class="btn" data-game="hangman">Hangman</button><button class="btn" data-game="feud">Family Face-Off</button><button class="btn" data-game="wheel">Spin &amp; Solve</button><button class="btn on">Answer Board</button></div>
+      <h3>Rounds</h3>
+      <select class="field" id="rounds" style="max-width:16em"><option value="1">One board (quick game)</option><option value="2">Two boards (second one doubled)</option></select>
+      <h3>Options</h3>
+      <label class="choice"><input type="checkbox" id="choices"> Easy mode: four choices to tap instead of typing</label>
+      <label class="choice"><input type="checkbox" id="penalty"> Wrong answers lose the clue’s value (like the show)</label>
+      <label class="choice"><input type="checkbox" id="final"> Final round: everyone wagers and answers one last clue</label>
+      <p class="rules">The player in control picks a clue on their phone. The host reads it, then everyone races to buzz in. Get it right to win the money and pick next; get it wrong and someone else can buzz. No need to answer as a question. Hidden Daily Doubles let the picker bet on themselves.</p>
+      <p class="err" id="lobbyErr"></p>
+      <div class="actions"><button class="btn primary" id="startGame">Start the game</button></div>
+    </section>
+  </div>
+</div></div>
+
+<div class="overlay" id="ovChamp" hidden><div class="card">
+  <h2 id="champTitle"></h2>
+  <p id="champAnswer" style="color:var(--gold-1)"></p>
+  <ol class="podium" id="podium"></ol>
+  <div class="actions"><button class="btn primary" id="newGame">New game</button></div>
+</div></div>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<script src="/sound.js"></script>
+<script src="/feud-sounds.js"></script>
+<script src="/quiz-sounds.js"></script>
+<script src="/quiz-tv.js"></script>
+</body>
+</html>

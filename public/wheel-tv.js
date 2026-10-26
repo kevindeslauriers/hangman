@@ -18,7 +18,7 @@ function connect(takeover) {
     else if (m.t === 'busy') { $('#ovConnect').hidden = true; $('#ovBusy').hidden = false; }
     else if (m.t === 'replaced') { V.replaced = true; $('#ovBusy').hidden = false; $('#ovBusy h2').textContent = 'The game moved to another screen'; }
     else if (m.t === 'state') {
-      if (m.view.game !== 'wheel') { V.leaving = true; location.replace(m.view.game === 'feud' ? '/feud-tv' : '/tv'); return; }
+      if (m.view.game !== 'wheel') { V.leaving = true; location.replace({ feud: '/feud-tv', quiz: '/quiz-tv' }[m.view.game] || '/tv'); return; }
       render(m.view);
     }
     else if (m.t === 'fx') onFx(m);

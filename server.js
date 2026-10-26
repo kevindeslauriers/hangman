@@ -9,12 +9,14 @@ const QRCode = require('qrcode');
 const { Game, GameError } = require('./lib/game');
 const { Feud, FeudError } = require('./lib/feud');
 const { Wheel, WheelError } = require('./lib/wheel');
+const { Quiz, QuizError, ClueStore } = require('./lib/quiz');
 const { ThemeStore } = require('./lib/themes');
 const { SurveyStore } = require('./lib/survey');
 
 function createServer({ gameOpts = {} } = {}) {
   const themes = new ThemeStore({ dir: path.join(__dirname, 'themes') });
   const surveys = new SurveyStore({ dir: path.join(__dirname, 'surveys') });
+  const clues = new ClueStore({ dir: path.join(__dirname, 'clues') });
 
   const clients = new Set(); // { ws, role: 'tv'|'phone', playerId }
   const host = { key: null };
@@ -42,7 +44,8 @@ function createServer({ gameOpts = {} } = {}) {
   const game = new Game({ themes, onChange: scheduleState, fx, ...gameOpts });
   const feud = new Feud({ surveys, onChange: scheduleState, fx, ...gameOpts, code: game.code });
   const wheel = new Wheel({ themes, onChange: scheduleState, fx, ...gameOpts, code: game.code });
-  const games = { hangman: game, feud, wheel };
+  const quiz = new Quiz({ clues, onChange: scheduleState, fx, ...gameOpts, code: game.code });
+  const games = { hangman: game, feud, wheel, quiz };
   let mode = 'hangman';
   const cur = () => games[mode];
   const view = () => ({ ...cur().view(), game: mode });
@@ -82,7 +85,8 @@ function createServer({ gameOpts = {} } = {}) {
   app.get('/api/themes', (req, res) => res.json(themes.list()));
 
   // Recordings that replace Face-Off's built-in sounds (public/sounds/<name>.mp3).
-  const SOUND_NAMES = ['wheel-tick', 'wheel-ding', 'wheel-buzz', 'wheel-bankrupt', 'wheel-loseturn', 'wheel-solve', 'wheel-round',
+  const SOUND_NAMES = ['quiz-board', 'quiz-pick', 'quiz-buzz', 'quiz-right', 'quiz-wrong', 'quiz-timesup', 'quiz-dailydouble',
+    'quiz-think', 'quiz-final', 'quiz-roundbreak', 'quiz-champ', 'wheel-tick', 'wheel-ding', 'wheel-buzz', 'wheel-bankrupt', 'wheel-loseturn', 'wheel-solve', 'wheel-round',
     'wheel-tossup', 'wheel-buzzin', 'wheel-puzzle', 'wheel-vowel', 'wheel-bonus', 'wheel-bonuswin', 'wheel-bonuslose', 'wheel-wrong',
     'ding', 'strike', 'buzzin', 'flip', 'round', 'control', 'steal', 'win', 'keep', 'applause',
     'fastStart', 'fastEnd', 'fastZero', 'dupe', 'champ', 'join', 'lock', 'tick', 'theme'];
@@ -106,6 +110,27 @@ function createServer({ gameOpts = {} } = {}) {
     cur().remove(id);
   };
   const leave = (m, id, c) => { c.playerId = null; c.role = null; cur().remove(id); send(c.ws, { t: 'left' }); };
+
+  const QUIZ_TV = {
+    switchGame: m => switchGame(m.to),
+    settings: m => quiz.updateSettings(m.settings || {}),
+    start: () => quiz.start(),
+    lobby: () => quiz.toLobby(),
+    choose: m => quiz.choose(null, m.c, m.r),
+    endRound: () => quiz.endRound(),
+    kick: m => kick(m.id),
+  };
+  const QUIZ_PHONE = {
+    choose: (m, id) => quiz.choose(id, m.c, m.r),
+    buzz: (m, id) => quiz.buzz(id),
+    answer: (m, id) => quiz.answer(id, m.a),
+    ddWager: (m, id) => quiz.ddWager(id, m.amount),
+    ddAnswer: (m, id) => quiz.ddAnswer(id, m.a),
+    finalWager: (m, id) => quiz.finalWager(id, m.amount),
+    finalAnswer: (m, id) => quiz.finalAnswer(id, m.a),
+    newGame: () => { if (quiz.phase !== 'champ') throw new QuizError('The game isn’t over.'); quiz.toLobby(); },
+    leave,
+  };
 
   const WHEEL_TV = {
     switchGame: m => switchGame(m.to),
@@ -238,12 +263,12 @@ function createServer({ gameOpts = {} } = {}) {
       try {
         if (m.t === 'hello' && m.role === 'tv') return helloTv(c, m);
         if (m.t === 'hello' && m.role === 'phone') return helloPhone(c, m);
-        const tv = { feud: FEUD_TV, wheel: WHEEL_TV }[mode] || TV_CMDS;
-        const phone = { feud: FEUD_PHONE, wheel: WHEEL_PHONE }[mode] || PHONE_CMDS;
+        const tv = { feud: FEUD_TV, wheel: WHEEL_TV, quiz: QUIZ_TV }[mode] || TV_CMDS;
+        const phone = { feud: FEUD_PHONE, wheel: WHEEL_PHONE, quiz: QUIZ_PHONE }[mode] || PHONE_CMDS;
         if (c.role === 'tv' && tv[m.t]) return tv[m.t](m);
         if (c.role === 'phone' && c.playerId && phone[m.t]) return phone[m.t](m, c.playerId, c);
       } catch (e) {
-        if (e instanceof GameError || e instanceof FeudError || e instanceof WheelError) return send(ws, { t: 'error', msg: e.message });
+        if (e instanceof GameError || e instanceof FeudError || e instanceof WheelError || e instanceof QuizError) return send(ws, { t: 'error', msg: e.message });
         console.error(e);
         send(ws, { t: 'error', msg: 'Something went wrong.' });
       }
@@ -263,9 +288,9 @@ function createServer({ gameOpts = {} } = {}) {
     });
   }, 25000);
   beat.unref();
-  server.on('close', () => { clearInterval(beat); game.stopTimer(); feud.stopTimer(); wheel.stopTimer(); wheel.stopStep(); });
+  server.on('close', () => { clearInterval(beat); game.stopTimer(); feud.stopTimer(); wheel.stopTimer(); wheel.stopStep(); quiz.stopTimer(); });
 
-  return { server, game, feud, wheel, themes };
+  return { server, game, feud, wheel, quiz, themes };
 }
 
 module.exports = { createServer };

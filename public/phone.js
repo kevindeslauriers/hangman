@@ -59,14 +59,17 @@ function render() {
   const act = document.activeElement, actId = act && el.contains(act) ? act.id : '';
   let selS = null, selE = null; try { selS = act.selectionStart; selE = act.selectionEnd; } catch (e) {}
   const v = P.view;
-  if (v && v.phase !== P.phase) { ['secret', 'secretHint', 'solve', 'fa'].forEach(k => { delete P.drafts[k]; }); P.phase = v.phase; }
+  if (v && v.phase !== P.phase) { ['secret', 'secretHint', 'solve', 'fa', 'wa', 'qa', 'qw'].forEach(k => { delete P.drafts[k]; }); P.phase = v.phase; }
   const feud = !!(v && v.game === 'feud');
   const wheel = !!(v && v.game === 'wheel');
-  document.body.classList.toggle('feud', feud);
+  const quiz = !!(v && v.game === 'quiz');
+  // Answer Board borrows Face-Off's blue look.
+  document.body.classList.toggle('feud', feud || quiz);
+  document.body.classList.toggle('quiz', quiz);
   document.body.classList.toggle('wheel', wheel);
-  document.getElementById('feudCss').disabled = !feud;
+  document.getElementById('feudCss').disabled = !(feud || quiz);
   document.getElementById('wheelCss').disabled = !wheel;
-  document.title = feud ? 'Family Face-Off' : wheel ? 'Spin & Solve' : 'Hangman';
+  document.title = feud ? 'Family Face-Off' : wheel ? 'Spin & Solve' : quiz ? 'Answer Board' : 'Hangman';
   el.innerHTML = '';
   if (P.status) el.append(h('p', { className: 'status', textContent: P.status }));
 
@@ -79,6 +82,7 @@ function render() {
       if (v.phase === 'lobby') el.append(lobbyScreen(v));
       else if (feud) el.append(...feudScreen(v));
       else if (wheel) el.append(...wheelScreen(v));
+      else if (quiz) el.append(...quizScreen(v));
       else if (v.phase === 'secret') el.append(secretScreen(v));
       else if (v.phase === 'play') el.append(...playScreen(v));
       else if (v.phase === 'end') el.append(endScreen(v));
@@ -89,7 +93,7 @@ function render() {
   }
   if (actId) { const n = document.getElementById(actId); if (n) { n.focus({ preventScroll: true }); try { if (selS != null) n.setSelectionRange(selS, selE); } catch (e) {} } }
 
-  const myTurn = !!(v && !feud && !wheel && v.phase === 'play' && v.turnId === P.me);
+  const myTurn = !!(v && !feud && !wheel && !quiz && v.phase === 'play' && v.turnId === P.me);
   if (myTurn && !P.wasTurn) buzz([80, 60, 80]);
   P.wasTurn = myTurn;
   setClock(v);
@@ -126,6 +130,7 @@ function lobbyScreen(v) {
     h('p', { className: 'small', textContent: `Playing: ${v.players.map(p => p.name).join(', ')}` }),
     v.game === 'feud' ? h('p', { className: 'small', textContent: 'Game: Family Face-Off' })
       : v.game === 'wheel' ? h('p', { className: 'small', textContent: 'Game: Spin & Solve' })
+      : v.game === 'quiz' ? h('p', { className: 'small', textContent: 'Game: Answer Board' })
       : v.themeName ? h('p', { className: 'small', textContent: `Theme: ${v.themeName}` }) : null);
 }
 
@@ -219,7 +224,7 @@ function champScreen(v) {
 
 /* ---------- shot clock ---------- */
 function setClock(v) {
-  P.clock = v && v.timer && (v.phase === 'play' || v.game === 'feud' || v.game === 'wheel') ? { mode: v.timer.mode, end: Date.now() + v.timer.remaining } : null;
+  P.clock = v && v.timer && (v.phase === 'play' || v.game === 'feud' || v.game === 'wheel' || v.game === 'quiz') ? { mode: v.timer.mode, end: Date.now() + v.timer.remaining } : null;
   tick();
 }
 function tick() {

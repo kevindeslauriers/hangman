@@ -1,0 +1,225 @@
+# Clues: Family
+// "## CATEGORY" then five clues, levels 1 (easiest) to 5:
+//   level | clue | ANSWER / other ways to say it
+// In easy mode the wrong choices are the other answers in the category, so
+// keep each category's answers the same kind of thing.
+// FINAL | CATEGORY | clue | ANSWER / others | WRONG; WRONG; WRONG
+
+## ANIMAL SOUNDS
+1 | This farm animal says "moo" | COW / COWS / CATTLE
+2 | This barnyard bird crows "cock-a-doodle-doo" at sunrise | ROOSTER / CHICKEN
+3 | It "hoots" at night and is said to be very wise | OWL / OWLS
+4 | This animal "neighs" and you can ride it | HORSE / PONY
+5 | This big jungle cat "roars" and is called the king of the jungle | LION / LIONS
+
+## BREAKFAST TABLE
+1 | You pour this sweet, sticky Canadian favourite on pancakes | MAPLE SYRUP / SYRUP
+2 | Two slices of bread go into this kitchen machine | TOASTER
+3 | Sunny side up, scrambled or poached | EGGS / EGG
+4 | Crispy strips of pork that sizzle in a frying pan | BACON
+5 | Oats cooked with milk or water make this hot cereal | OATMEAL / PORRIDGE
+
+## COLOURS
+1 | The colour of the sky on a sunny day | BLUE
+2 | Mix red and yellow paint to get this colour | ORANGE
+3 | The colour of grass and of a maple leaf in summer | GREEN
+4 | Mix red and blue to get this royal colour | PURPLE / VIOLET
+5 | Mix black and white to get this colour | GREY / GRAY
+
+## CANADA
+1 | Canada's national winter sport, played on ice with a puck | HOCKEY / ICE HOCKEY
+2 | This leaf is on the Canadian flag | MAPLE LEAF / MAPLE
+3 | Canada's capital city, home of Parliament Hill | OTTAWA
+4 | This one-dollar coin has a bird on it | LOONIE / LOONY
+5 | Canada's biggest city, home of the CN Tower | TORONTO
+
+## FAIRY TALES
+1 | She left a glass slipper at the ball | CINDERELLA
+2 | She let down her very long hair from a tower | RAPUNZEL
+3 | She tried the porridge of three bears | GOLDILOCKS
+4 | He climbed a beanstalk to a giant's castle | JACK
+5 | This puppet's nose grew every time he told a lie | PINOCCHIO
+
+## SPORTS
+1 | You hit a home run in this sport | BASEBALL
+2 | You shoot hoops and dunk in this sport | BASKETBALL
+3 | You get a hole in one in this sport | GOLF
+4 | Players score a touchdown in this sport | FOOTBALL
+5 | You serve and volley over a net with a racquet in this sport | TENNIS
+
+## FRUIT
+1 | Monkeys love this long yellow fruit | BANANA / BANANAS
+2 | Keep the doctor away by eating one of these a day | APPLE / APPLES
+3 | This big green fruit is red inside with black seeds | WATERMELON
+4 | This fuzzy brown fruit is bright green inside | KIWI
+5 | This sour yellow fruit is used to make lemonade | LEMON / LEMONS
+
+## BODY PARTS
+1 | You have ten of these on your hands | FINGERS / FINGER
+2 | You smell with this | NOSE
+3 | This muscle pumps blood all through your body | HEART
+4 | You have 32 of these when you're a grown-up, if you brush them | TEETH / TOOTH
+5 | The longest bone in your body is in this part of your leg | THIGH / FEMUR / THIGH BONE
+
+## PLANETS
+1 | The planet we live on | EARTH
+2 | The red planet | MARS
+3 | The biggest planet in our solar system | JUPITER
+4 | This planet is famous for its beautiful rings | SATURN
+5 | The planet closest to the sun | MERCURY
+
+## MOVIES FOR KIDS
+1 | "Let It Go" is the big song in this movie about Elsa and Anna | FROZEN
+2 | A green ogre and a talking donkey star in this movie | SHREK
+3 | Woody and Buzz Lightyear are toys in this movie | TOY STORY
+4 | A clownfish dad searches the ocean for his son in this movie | FINDING NEMO
+5 | Simba becomes king in this movie | THE LION KING / LION KING
+
+## CARTOON CHARACTERS
+1 | This mouse with big round ears is Disney's most famous character | MICKEY MOUSE / MICKEY
+2 | He lives in a pineapple under the sea | SPONGEBOB / SPONGEBOB SQUAREPANTS
+3 | This lazy orange cat loves lasagna and hates Mondays | GARFIELD
+4 | Charlie Brown's dog, who sleeps on top of his doghouse | SNOOPY
+5 | This rabbit always asks "What's up, Doc?" | BUGS BUNNY / BUGS
+
+## IN THE KITCHEN
+1 | It keeps your food cold | FRIDGE / REFRIGERATOR
+2 | You bake cookies inside this | OVEN / STOVE
+3 | This machine heats food fast with invisible waves | MICROWAVE
+4 | You flip pancakes with this flat tool | SPATULA / FLIPPER
+5 | This whistles on the stove when the water boils | KETTLE / TEA KETTLE
+
+## WEATHER
+1 | Water falling from the clouds | RAIN
+2 | White flakes that fall in winter | SNOW
+3 | A colourful arc in the sky after the rain | RAINBOW
+4 | This spinning, funnel-shaped storm can pick up cars | TORNADO / TWISTER
+5 | A huge snowstorm with strong winds | BLIZZARD
+
+## OCEAN ANIMALS
+1 | The biggest animal on Earth, it's blue | BLUE WHALE / WHALE
+2 | This sea animal has eight arms | OCTOPUS
+3 | This smart, smiling sea animal clicks and whistles | DOLPHIN
+4 | Nemo is this kind of orange and white fish | CLOWNFISH / CLOWN FISH
+5 | This sea creature is shaped like a star | STARFISH / SEA STAR
+
+## JOBS
+1 | This person helps you when you're sick | DOCTOR / NURSE
+2 | This person puts out fires | FIREFIGHTER / FIREMAN
+3 | This person teaches you in school | TEACHER
+4 | This person takes care of sick animals | VETERINARIAN / VET
+5 | This person flies an airplane | PILOT
+
+## HOLIDAYS
+1 | Kids go trick-or-treating on this holiday | HALLOWEEN
+2 | Santa Claus comes down the chimney on this holiday | CHRISTMAS
+3 | A bunny hides chocolate eggs on this holiday | EASTER
+4 | People send cards with hearts on this holiday in February | VALENTINE'S DAY / VALENTINES DAY / VALENTINES
+5 | Canadians eat turkey and pumpkin pie on this October holiday | THANKSGIVING
+
+## MUSICAL INSTRUMENTS
+1 | It has black and white keys | PIANO
+2 | You strum the strings of this instrument | GUITAR
+3 | You hit these with sticks to keep the beat | DRUMS / DRUM
+4 | You play this string instrument with a bow under your chin | VIOLIN / FIDDLE
+5 | This shiny brass instrument has three valves and you blow into it | TRUMPET
+
+## SHAPES
+1 | It's perfectly round | CIRCLE
+2 | It has three sides | TRIANGLE
+3 | It has four equal sides | SQUARE
+4 | A stop sign is this eight-sided shape | OCTAGON
+5 | A soccer ball is mostly made of these six-sided shapes | HEXAGON / HEXAGONS
+
+## SUPERHEROES
+1 | He's the Man of Steel from the planet Krypton | SUPERMAN
+2 | Peter Parker swings from webs as this hero | SPIDER-MAN / SPIDERMAN
+3 | This caped crusader lives in Gotham City | BATMAN
+4 | When Bruce Banner gets angry, he turns into this big green hero | THE HULK / HULK / INCREDIBLE HULK
+5 | This Amazon princess has a golden lasso of truth | WONDER WOMAN
+
+## THINGS WITH WHEELS
+1 | You pedal this two-wheeler | BICYCLE / BIKE
+2 | This yellow vehicle takes kids to school | SCHOOL BUS / BUS
+3 | It pulls a plow on a farm | TRACTOR
+4 | You push a baby around in this | STROLLER / BABY STROLLER / PRAM
+5 | You roll down the sidewalk standing on this board | SKATEBOARD
+
+## SNACKS
+1 | You eat this buttery snack at the movies | POPCORN
+2 | Crunchy, thin and salty, they come in a bag | CHIPS / POTATO CHIPS
+3 | These twisted, salty bread snacks are shaped like a knot | PRETZELS / PRETZEL
+4 | A sandwich made of two cookies and white cream filling | OREO / OREOS
+5 | Roast this on a stick by the campfire to make s'mores | MARSHMALLOW / MARSHMALLOWS
+
+## INSECTS AND BUGS
+1 | This insect makes honey | BEE / HONEYBEE / BUMBLEBEE
+2 | This red insect has black spots | LADYBUG / LADYBIRD
+3 | A caterpillar turns into this | BUTTERFLY
+4 | This insect glows in the dark on summer nights | FIREFLY / LIGHTNING BUG
+5 | This insect bites you and makes you itchy at the cottage | MOSQUITO
+
+## BIRDS
+1 | This black and white bird can't fly but loves the cold | PENGUIN
+2 | This bird on the loonie is famous for its haunting call | LOON
+3 | This colourful bird can learn to talk | PARROT
+4 | This bird has a huge colourful tail that it fans out | PEACOCK
+5 | This tiny bird can fly backwards and hover | HUMMINGBIRD
+
+## FAMOUS PLACES
+1 | This Paris tower is made of iron | EIFFEL TOWER
+2 | This huge waterfall is on the Canada and US border | NIAGARA FALLS / NIAGARA
+3 | This long wall in China can be seen for miles | GREAT WALL OF CHINA / GREAT WALL
+4 | These huge stone tombs in Egypt have four triangle sides | PYRAMIDS / THE PYRAMIDS / PYRAMID
+5 | This green lady holds a torch in New York Harbor | STATUE OF LIBERTY
+
+## OPPOSITES
+1 | The opposite of hot | COLD
+2 | The opposite of up | DOWN
+3 | The opposite of day | NIGHT
+4 | The opposite of loud | QUIET / SOFT
+5 | The opposite of ancient | MODERN / NEW
+
+## BOARD GAMES
+1 | Buy Boardwalk and Park Place in this game | MONOPOLY
+2 | Make words with letter tiles in this game | SCRABBLE
+3 | Colonel Mustard in the library with the candlestick | CLUE
+4 | Pull out a block without knocking over the tower | JENGA
+5 | Drop red and yellow discs to get four in a row | CONNECT FOUR / CONNECT 4
+
+## ROOMS IN A HOUSE
+1 | You sleep in this room | BEDROOM
+2 | You cook dinner in this room | KITCHEN
+3 | You brush your teeth in this room | BATHROOM / WASHROOM
+4 | The car is parked in this room | GARAGE
+5 | This room is under the house and is often cold | BASEMENT / CELLAR
+
+## SEASONS AND MONTHS
+1 | The month with Christmas Day | DECEMBER
+2 | The season when leaves fall from the trees | FALL / AUTUMN
+3 | The shortest month of the year | FEBRUARY
+4 | The month when Canada Day is celebrated | JULY
+5 | The month with April Fools' Day | APRIL
+
+## DINOSAURS
+1 | This big meat-eater's name means "tyrant lizard king" | T. REX / T REX / TYRANNOSAURUS / TYRANNOSAURUS REX
+2 | This dinosaur had three horns on its face | TRICERATOPS
+3 | This dinosaur had plates on its back and spikes on its tail | STEGOSAURUS
+4 | This flying reptile had huge wings | PTERODACTYL / PTERANODON
+5 | Speedy and clever, this dinosaur was in Jurassic Park's kitchen | VELOCIRAPTOR / RAPTOR
+
+## THE CIRCUS AND FAIR
+1 | This performer has a red nose and big shoes | CLOWN
+2 | This big round ride takes you up high to see the fair | FERRIS WHEEL
+3 | This pink, fluffy treat is spun from sugar | COTTON CANDY / CANDY FLOSS
+4 | This performer walks on a thin wire high in the air | TIGHTROPE WALKER / TIGHTROPE / HIGH WIRE
+5 | The person in the top hat who announces the circus acts | RINGMASTER
+
+FINAL | ANIMALS | This is the only mammal that can truly fly | BAT / BATS | FLYING SQUIRREL; EAGLE; FLYING FISH
+FINAL | CANADA | This is the only Canadian province where most people speak French | QUEBEC | ONTARIO; NEW BRUNSWICK; MANITOBA
+FINAL | SPACE | This is the closest star to Earth | THE SUN / SUN | THE NORTH STAR; THE MOON; SIRIUS
+FINAL | THE HUMAN BODY | This is the biggest organ of the human body | SKIN / THE SKIN | LIVER; BRAIN; HEART
+FINAL | GEOGRAPHY | This is the biggest ocean on Earth | PACIFIC / PACIFIC OCEAN | ATLANTIC; INDIAN; ARCTIC
+FINAL | FOOD | Guacamole is made mostly from this green fruit | AVOCADO / AVOCADOS | LIME; GREEN PEPPER; CUCUMBER
+FINAL | NUMBERS | A spider has this many legs | EIGHT / 8 | SIX; TEN; FOUR
+FINAL | SPORTS | Wayne Gretzky played this sport | HOCKEY / ICE HOCKEY | BASEBALL; FOOTBALL; BASKETBALL

@@ -15,7 +15,7 @@ function connect(takeover) {
     else if (m.t === 'busy') { $('#ovConnect').hidden = true; showBusy(false); }
     else if (m.t === 'replaced') { V.replaced = true; showBusy(true); }
     else if (m.t === 'state') {
-      if (m.view.game !== 'hangman') { V.leaving = true; location.replace(m.view.game === 'feud' ? '/feud-tv' : '/wheel-tv'); return; }
+      if (m.view.game !== 'hangman') { V.leaving = true; location.replace({ feud: '/feud-tv', wheel: '/wheel-tv', quiz: '/quiz-tv' }[m.view.game]); return; }
       render(m.view);
     }
     else if (m.t === 'fx') onFx(m);
@@ -240,6 +240,7 @@ $('#startGame').onclick = () => { unlockAudio(); cmd('start'); };
 $('#resetScores').onclick = () => cmd('resetScores');
 $('#toFeud').onclick = () => cmd('switchGame', { to: 'feud' });
 $('#toWheel').onclick = () => cmd('switchGame', { to: 'wheel' });
+$('#toQuiz').onclick = () => cmd('switchGame', { to: 'quiz' });
 
 /* ---------- round over and champion ---------- */
 function renderEnd(v) {

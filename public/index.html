@@ -74,6 +74,13 @@ body.feud .me b{color:var(--gold-1)}
 .mini li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mini li.on{color:#fff}
 .mini li.off{background:linear-gradient(#22356f,#16245a);color:#c9d5ff}
+/* Answer Board (on top of the Face-Off look) */
+.qcatp{margin:.4em 0 0;font-weight:600;font-size:.85em;letter-spacing:.06em;color:#fff}
+.qvals{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.qvals .qv{padding:.45em 0!important;font-family:"Anton",sans-serif;color:#ffcc33;background:linear-gradient(#1c34e0,#060f6e);border-color:#6f86ff;font-size:.95em}
+.qvals .qv:disabled{opacity:.25}
+.bigbuzz.wait{background:radial-gradient(circle at 40% 35%,#9aa3c7,#4a5280 60%,#262b48);font-size:2.2em;cursor:default}
+.btn.choice{white-space:normal;line-height:1.2}
 /* Spin & Solve look; colours and buttons come from wheel.css */
 body.wheel #app{background:transparent}
 body.wheel .title,body.wheel .turn{font-family:"Anton",sans-serif;font-weight:400;letter-spacing:.03em;text-transform:uppercase}
@@ -109,6 +116,8 @@ body.wheel .keys .key.hit{background:var(--gold);border-color:#fff}
 <script src="/wheel-sounds.js"></script>
 <script src="/feud-phone.js"></script>
 <script src="/wheel-phone.js"></script>
+<script src="/quiz-sounds.js"></script>
+<script src="/quiz-phone.js"></script>
 <script src="/phone.js"></script>
 </body>
 </html>
