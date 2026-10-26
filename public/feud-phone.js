@@ -43,7 +43,7 @@ function feudScreen(v) {
       myTurn = true;
       out.push(h('p', { className: 'turn mine', textContent: 'Face-off! Your answer?' }), feudAnswerBox('Lock it in', 'faceoff'));
     } else if (f.open && !f.contenders.includes(me)) {
-      out.push(h('button', { className: 'bigbuzz', textContent: 'BUZZ', on: { click: () => { buzz(40); send('buzz'); } } }));
+      out.push(h('button', { className: 'bigbuzz', textContent: 'BUZZ', on: { click: () => { buzz(40); playSound('buzzin'); send('buzz'); } } }));
       say(v.msg);
     } else {
       say(v.msg);

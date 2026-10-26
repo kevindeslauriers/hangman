@@ -51,6 +51,17 @@ body{font-size:clamp(14px,1.5vw,30px);overflow:hidden;height:100vh}
 .join img{width:clamp(60px,7vw,130px);border-radius:6px;background:#fff;padding:3px}
 .join .code{font-family:"Anton",sans-serif;font-size:2.2em;letter-spacing:.12em;color:var(--gold-1);line-height:1}
 
+/* The answer goes up big while the host says "Survey says!" */
+.said{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:25;pointer-events:none;background:rgba(2,8,30,.35)}
+.saidcard{display:flex;flex-direction:column;align-items:center;gap:.2em;padding:.5em 1.4em .6em;border-radius:.4em;
+  background:linear-gradient(#0b2a8a,#04155a);border:.18em solid var(--gold-1);box-shadow:0 0 0 .1em #6b4a00,0 1em 3em rgba(0,0,0,.7);
+  animation:saidin .3s cubic-bezier(.3,1.5,.6,1) both;max-width:80vw}
+.saidcard small{font-family:"Oswald",sans-serif;font-size:1.1em;text-transform:uppercase;letter-spacing:.12em;color:#bcd0ff}
+.saidcard b{font-family:"Anton",sans-serif;font-weight:400;font-size:4em;line-height:1.05;letter-spacing:.02em;text-align:center}
+#saidSays{font-family:"Anton",sans-serif;font-size:1.6em;color:var(--gold-1);letter-spacing:.08em;text-transform:uppercase;opacity:0;transform:scale(.8);transition:opacity .2s,transform .3s cubic-bezier(.3,1.6,.6,1)}
+#saidSays.on{opacity:1;transform:scale(1)}
+@keyframes saidin{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+
 /* Big strike X, like the show */
 .bigx{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;gap:2vw;pointer-events:none;z-index:30}
 .bigx span{font-family:"Anton",sans-serif;font-size:42vh;line-height:1;color:var(--red);
@@ -104,6 +115,7 @@ body{font-size:clamp(14px,1.5vw,30px);overflow:hidden;height:100vh}
     <div class="tools">
       <button class="btn" id="btnStrike" hidden>Give a strike</button>
       <button class="btn" id="btnLobby">Lobby</button>
+      <button class="btn" id="btnVoice">Host voice on</button>
       <button class="btn" id="btnSound">Sound on</button>
       <button class="btn" id="btnFull">Full screen</button>
     </div>
@@ -136,6 +148,7 @@ body{font-size:clamp(14px,1.5vw,30px);overflow:hidden;height:100vh}
   <div class="actions" id="fastActions"></div>
 </section>
 
+<div class="said" id="said" hidden><div class="saidcard"><small id="saidWho"></small><b id="saidText"></b><span id="saidSays">Survey says…</span></div></div>
 <div class="bigx" id="bigX"></div>
 
 <div class="overlay" id="ovConnect"><div class="card"><h2>Connecting…</h2><p id="connectText">Finding the game server.</p></div></div>
@@ -186,6 +199,7 @@ body{font-size:clamp(14px,1.5vw,30px);overflow:hidden;height:100vh}
 
 <canvas id="confetti" aria-hidden="true" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:40"></canvas>
 <script src="/sound.js"></script>
+<script src="/feud-sounds.js"></script>
 <script src="/feud-tv.js"></script>
 </body>
 </html>

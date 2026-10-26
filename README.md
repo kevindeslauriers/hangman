@@ -24,6 +24,30 @@ Every player is their own family (2 to 8 players).
 - Round 3 is double points, round 4 on is triple. First to the target (200, 300 or 500) plays **Fast Money** with a partner they pick (or plays both halves): five questions in 20 seconds, then the partner gets 25 seconds and can't repeat an answer. 200 points wins.
 - Typed answers are matched automatically (plurals, "a"/"the", small typos, and the other wordings in the survey file). When it misses one, the TV shows **That counts** to credit the right answer, and **Give a strike** for someone who stalls.
 
+### Sound
+
+The TV plays every sound; phones only buzz (and play the buzzer when you hit BUZZ). The effects are built into the game (`public/feud-sounds.js`): the bell for a right answer, the strike buzzer, brass stings, the Fast Money buzzers and a studio audience. When someone answers, the TV puts their answer up big and the host says "Survey says!" (using the TV browser's built-in voice), then the tile flips or the X comes down. The host also reads each question. **Host voice** and **Sound** buttons on the TV turn these off.
+
+To use your own recordings, add `.mp3` files to `public/sounds/` with these names; each one replaces the built-in sound:
+
+| File | Plays when |
+|---|---|
+| `ding.mp3` | a right answer flips over |
+| `strike.mp3` | a strike (the big red X) |
+| `buzzin.mp3` | someone buzzes in at the face-off |
+| `flip.mp3` | missed answers turn over at the end of a round |
+| `round.mp3` | each round starts |
+| `theme.mp3` | the first round of a game starts (instead of `round`) |
+| `control.mp3` | someone wins the face-off |
+| `steal.mp3` | three strikes; time to steal |
+| `win.mp3` | a board is won or stolen |
+| `keep.mp3` | a steal fails |
+| `fastStart.mp3` / `fastEnd.mp3` | the Fast Money clock starts / runs out |
+| `fastZero.mp3` | a Fast Money answer scores nothing |
+| `dupe.mp3` | a repeated Fast Money answer |
+| `champ.mp3` | the final scores |
+| `join.mp3`, `lock.mp3`, `tick.mp3` | someone joins, a steal is locked in, the last 5 seconds |
+
 ### Surveys
 
 Questions are `.txt` files in [`surveys/`](surveys):

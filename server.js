@@ -1,4 +1,5 @@
 'use strict';
+const fs = require('fs');
 const http = require('http');
 const path = require('path');
 const crypto = require('crypto');
@@ -77,6 +78,16 @@ function createServer({ gameOpts = {} } = {}) {
   });
 
   app.get('/api/themes', (req, res) => res.json(themes.list()));
+
+  // Recordings that replace Face-Off's built-in sounds (public/sounds/<name>.mp3).
+  const SOUND_NAMES = ['ding', 'strike', 'buzzin', 'flip', 'round', 'control', 'steal', 'win', 'keep', 'applause',
+    'fastStart', 'fastEnd', 'fastZero', 'dupe', 'champ', 'join', 'lock', 'tick', 'theme'];
+  app.get('/api/sounds', (req, res) => {
+    const dir = path.join(__dirname, 'public', 'sounds');
+    let files = [];
+    try { files = fs.readdirSync(dir); } catch (e) {}
+    res.json(SOUND_NAMES.filter(n => files.includes(n + '.mp3')));
+  });
 
   app.use((err, req, res, next) => {
     console.error(err);

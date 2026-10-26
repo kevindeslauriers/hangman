@@ -16,7 +16,7 @@ function connect(takeover) {
     else if (m.t === 'replaced') { V.replaced = true; $('#ovBusy').hidden = false; $('#ovBusy h2').textContent = 'The game moved to another screen'; }
     else if (m.t === 'state') {
       if (m.view.game !== 'feud') { V.leaving = true; location.replace('/tv'); return; }
-      render(m.view);
+      if (V.busy) enqueue({ state: m.view }); else render(m.view);
     }
     else if (m.t === 'fx') onFx(m);
     else if (m.t === 'error') toast(m.msg);
@@ -55,6 +55,11 @@ function render(v) {
 
   if (v.phase === 'lobby') renderLobby(v, prev !== 'lobby');
   renderMain(v);
+  if (v.phase === 'faceoff' && v.question && v.question !== V.spokenQ) {
+    V.spokenQ = v.question;
+    const lead = v.multiplier === 3 ? 'Triple points! ' : v.multiplier === 2 ? 'Double points! ' : '';
+    setTimeout(() => hostSay(lead + v.question.replace(/\.$/, '')), 1500);
+  }
   if (v.phase === 'fastPick') renderPick(v);
   if (!$('#fastView').hidden) renderFast(v);
   if (v.phase === 'champ') renderChamp(v, prev !== 'champ');
@@ -141,7 +146,7 @@ function renderBoard(v) {
         V.open.add(i);
         // Unfound answers at the end of a round flip one after another.
         const delay = a.found ? 0 : 250 * [...v.board.slice(0, i)].filter(x => x && !x.found).length;
-        setTimeout(() => t.classList.add('open'), delay);
+        setTimeout(() => { t.classList.add('open'); if (!a.found) playSound('flip'); }, delay);
       }
     } else { t.classList.remove('open', 'missed'); V.open.delete(i); }
   });
@@ -195,7 +200,7 @@ function renderLobby(v, entering) {
 }
 $('#target').onchange = e => cmd('settings', { settings: { target: +e.target.value } });
 $('#timerOn').onchange = e => cmd('settings', { settings: { timerOn: e.target.checked } });
-$('#startGame').onclick = () => { unlockAudio(); cmd('start'); };
+$('#startGame').onclick = () => { unlockFeudAudio(); cmd('start'); };
 $('#toHangman').onclick = () => cmd('switchGame', { to: 'hangman' });
 
 /* ---------- Fast Money ---------- */
@@ -232,7 +237,7 @@ function renderFast(v) {
       if (revealing && part === revPart && a) {
         pts.classList.add('rev');
         pts.style.animationDelay = `${qi * STEP}ms`;
-        setTimeout(() => (a.points ? SOUNDS.reveal : SOUNDS.dupe)(), qi * STEP);
+        setTimeout(() => playSound(a.points ? 'ding' : 'fastZero'), qi * STEP);
       }
       // Fix a missed match after a half, before the total counts.
       if (scored && a && a.text && a.points === 0 && r.options) {
@@ -249,13 +254,16 @@ function renderFast(v) {
   const showTotal = () => {
     $('#fastSum').textContent = f.total;
     $('#fastTotal').classList.toggle('win', f.total >= f.goal && scored);
-    if (revealing && f.total >= f.goal && v.phase === 'fastDone') { SOUNDS.champ(); confetti(true); }
+    if (revealing && v.phase === 'fastDone') {
+      if (f.total >= f.goal) { playSound('win'); confetti(true); hostSay(`${f.total} points! You win Fast Money!`); }
+      else { playSound('keep'); hostSay(`${f.total} points. So close!`); }
+    }
   };
   clearTimeout(V.totalTimer);
   if (revealing) V.totalTimer = setTimeout(showTotal, f.rows.length * STEP); else showTotal();
   $('#fastMsg').textContent = v.msg;
   const act = $('#fastActions'); act.innerHTML = '';
-  const btn = (t, c, cls = 'btn primary') => { const b = el('button', cls, t); b.onclick = () => { unlockAudio(); cmd(c); }; act.append(b); };
+  const btn = (t, c, cls = 'btn primary') => { const b = el('button', cls, t); b.onclick = () => { unlockFeudAudio(); cmd(c); }; act.append(b); };
   if (v.phase === 'fastReady') btn(`Start the clock for ${nameOf(f.ids[f.part])}`, 'fastGo');
   if (v.phase === 'fastHalf') btn(`${p2}’s turn`, 'fastNext');
   if (v.phase === 'fastDone') btn('See the final scores', 'finish');
@@ -287,54 +295,92 @@ function tick() {
   $('#clockBar').style.transform = `scaleX(${Math.min(1, ms / c.total)})`;
   $('#clockNum').textContent = sec;
   $('#fastNum').textContent = sec;
-  if (sec !== V.lastSec) { V.lastSec = sec; if (sec <= 5 && sec > 0) tone(1250, 0, 0.06, 'square', 0.05); }
+  if (sec !== V.lastSec) { V.lastSec = sec; if (sec <= 5 && sec > 0 && !holding()) playSound('tick'); }
 }
 setInterval(tick, 100);
 
-/* ---------- sounds ---------- */
-function tone(f, start, dur, type = 'triangle', vol = 0.18) {
-  if (!FX.on) return;
-  try {
-    FX.ctx = FX.ctx || new (window.AudioContext || window.webkitAudioContext)();
-    const a = FX.ctx, t0 = a.currentTime;
-    const o = a.createOscillator(), g = a.createGain();
-    o.type = type; o.frequency.value = f;
-    g.gain.setValueAtTime(0.0001, t0 + start);
-    g.gain.linearRampToValueAtTime(vol, t0 + start + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + start + dur);
-    o.connect(g).connect(a.destination); o.start(t0 + start); o.stop(t0 + start + dur + 0.05);
-  } catch (e) {}
+/* ---------- sounds and the "survey says" beat ---------- */
+// When someone answers, the server sends "said" first. The TV puts the answer
+// up, the host says "Survey says!", and only then flips the tile or slams the
+// X down. State and effects that arrive meanwhile wait their turn.
+const SFX_FOR = { reveal: 'ding', strike: 'strike', buzz: 'buzzin', control: 'control', win: 'win', keep: 'keep', lock: 'lock',
+  dupe: 'dupe', fastStart: 'fastStart', fastEnd: 'fastEnd', champ: 'champ', join: 'join', steal: 'steal' };
+const GAP_AFTER = { strike: 1150, reveal: 350, steal: 600 };
+const holding = () => V.busy;
+V.queue = [];
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// Everything (state and effects) that arrives during a "survey says" beat is
+// queued and played back in order, so quick answers don't spoil each other.
+function enqueue(item) {
+  V.queue.push(item);
+  if (!V.busy) drain();
 }
-const SOUNDS = {
-  reveal: () => { tone(1568, 0, 0.5, 'sine', 0.22); tone(2093, 0.02, 0.6, 'sine', 0.12); },
-  strike: () => { tone(110, 0, 0.9, 'sawtooth', 0.18); tone(116, 0, 0.9, 'square', 0.1); tone(55, 0, 0.9, 'sawtooth', 0.12); },
-  buzz: () => tone(880, 0, 0.18, 'square', 0.1),
-  control: () => [523, 659, 784].forEach((f, k) => tone(f, k * 0.08, 0.2)),
-  round: () => [392, 523, 659, 784, 1047].forEach((f, k) => tone(f, k * 0.09, 0.3, 'square', 0.07)),
-  win: () => [523, 659, 784, 1047, 784, 1047].forEach((f, k) => tone(f, k * 0.12, 0.35)),
-  keep: () => [523, 440].forEach((f, k) => tone(f, k * 0.15, 0.3)),
-  lock: () => tone(660, 0, 0.08, 'square', 0.06),
-  dupe: () => { tone(300, 0, 0.15, 'square', 0.1); tone(300, 0.2, 0.15, 'square', 0.1); },
-  fastStart: () => [784, 1047].forEach((f, k) => tone(f, k * 0.1, 0.25, 'square', 0.08)),
-  fastEnd: () => tone(220, 0, 0.7, 'sawtooth', 0.12),
-  champ: () => [523, 523, 523, 659, 784, 659, 784, 1047].forEach((f, k) => tone(f, k * 0.14, 0.32, 'square', 0.07)),
-  join: () => [523, 784].forEach((f, k) => tone(f, k * 0.08, 0.18, 'triangle', 0.1)),
-};
+async function drain() {
+  V.busy = true;
+  while (V.queue.length) {
+    const item = V.queue.shift();
+    try {
+      if (item.state) { render(item.state); continue; }
+      const m = item.fx;
+      if (m.kind === 'said') { await surveySays(m); continue; }
+      playFx(m);
+      if (GAP_AFTER[m.kind]) await sleep(GAP_AFTER[m.kind]);
+    } catch (e) { console.error(e); }
+  }
+  V.busy = false;
+}
+async function surveySays(m) {
+  const voice = FS.voice && FS.on && !!window.speechSynthesis;
+  $('#saidWho').textContent = nameOf(m.id);
+  $('#saidText').textContent = `“${m.text}”`;
+  $('#saidSays').classList.remove('on');
+  $('#said').hidden = false;
+  await sleep(voice ? 450 : 250);
+  $('#saidSays').classList.add('on');
+  hostSay('Survey says!');
+  await sleep(voice ? 1650 : 1050);
+  $('#said').hidden = true;
+  if (m.top) setTimeout(() => hostSay('Number one answer!'), 700);
+}
+
 function onFx(m) {
-  if (SOUNDS[m.kind]) SOUNDS[m.kind]();
+  // Effects with nothing to wait for play straight away.
+  if (!V.busy && m.kind !== 'said') { playFx(m); return; }
+  enqueue({ fx: m });
+}
+function playFx(m) {
+  if (m.kind === 'round') {
+    playSound(FS.custom.theme && V.view && V.view.round <= 1 ? 'theme' : 'round');
+    return;
+  }
+  if (m.kind === 'steal') setTimeout(() => hostSay('Time to steal!'), 250);
+  if (SFX_FOR[m.kind]) playSound(SFX_FOR[m.kind]);
   if (m.kind === 'strike') showX(m.count);
   if (m.kind === 'win') confetti(false);
 }
 function showX(n) {
   const x = $('#bigX'); x.innerHTML = '';
   for (let i = 0; i < n; i++) x.append(el('span', '', '✕'));
-  setTimeout(() => { if (x.firstChild && x.firstChild.getAnimations && !x.firstChild.getAnimations().length) x.innerHTML = ''; }, 1400);
+  clearTimeout(V.xTimer);
+  V.xTimer = setTimeout(() => { x.innerHTML = ''; }, 1400);
 }
+loadCustomSounds();
 
 /* ---------- tools ---------- */
 $('#btnStrike').onclick = () => cmd('strike');
 $('#btnLobby').onclick = () => { if (confirm('End this game and go back to the lobby?')) cmd('lobby'); };
-$('#btnSound').onclick = () => { FX.on = !FX.on; $('#btnSound').textContent = FX.on ? 'Sound on' : 'Sound off'; if (FX.on) { unlockAudio(); SOUNDS.reveal(); } };
+$('#btnSound').onclick = () => {
+  FS.on = FX.on = !FS.on;
+  $('#btnSound').textContent = FS.on ? 'Sound on' : 'Sound off';
+  if (FS.on) { unlockFeudAudio(); playSound('ding'); } else { try { speechSynthesis.cancel(); } catch (e) {} }
+};
+$('#btnVoice').onclick = () => {
+  FS.voice = !FS.voice;
+  $('#btnVoice').textContent = FS.voice ? 'Host voice on' : 'Host voice off';
+  if (FS.voice) hostSay('Survey says!');
+};
+if (!window.speechSynthesis) $('#btnVoice').hidden = true;
 $('#btnFull').onclick = async () => {
   try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); }
   catch (e) { $('#btnFull').textContent = 'Use your browser’s full screen'; }
