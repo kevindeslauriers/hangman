@@ -10,20 +10,25 @@ const { Game, GameError } = require('./lib/game');
 const { Feud, FeudError } = require('./lib/feud');
 const { Wheel, WheelError } = require('./lib/wheel');
 const { Quiz, QuizError, ClueStore } = require('./lib/quiz');
+const { Bank, ClassError } = require('./lib/classroom');
+const { ClassRooms } = require('./lib/classrooms');
 const { ThemeStore } = require('./lib/themes');
 const { SurveyStore } = require('./lib/survey');
 
-function createServer({ gameOpts = {} } = {}) {
+function createServer({ gameOpts = {}, classOpts = {} } = {}) {
   const themes = new ThemeStore({ dir: path.join(__dirname, 'themes') });
   const surveys = new SurveyStore({ dir: path.join(__dirname, 'surveys') });
   const clues = new ClueStore({ dir: path.join(__dirname, 'clues') });
+  const bank = new Bank({ dir: path.join(__dirname, 'class-clues') });
 
-  const clients = new Set(); // { ws, role: 'tv'|'phone', playerId }
+  const clients = new Set(); // { send, role: 'tv'|'phone', playerId, room }; room is set for classroom clients
   const host = { key: null };
   let pending = false;
 
-  const send = (ws, msg) => { if (ws.readyState === 1) ws.send(JSON.stringify(msg)); };
-  const broadcast = msg => clients.forEach(c => c.role && send(c.ws, msg));
+  const send = (c, msg) => c.send(msg);
+  // Family games only; classroom rooms broadcast to their own clients.
+  const family = () => [...clients].filter(c => !c.room);
+  const broadcast = msg => family().forEach(c => c.role && send(c, msg));
 
   // Coalesce the several changes one command can make into one state push.
   const scheduleState = () => {
@@ -32,9 +37,9 @@ function createServer({ gameOpts = {} } = {}) {
     setImmediate(() => {
       pending = false;
       const v = { ...cur().view(), game: mode };
-      clients.forEach(c => {
-        if (c.role === 'tv') send(c.ws, { t: 'state', view: v });
-        else if (c.role === 'phone') send(c.ws, { t: 'state', view: v, you: c.playerId });
+      family().forEach(c => {
+        if (c.role === 'tv') send(c, { t: 'state', view: v });
+        else if (c.role === 'phone') send(c, { t: 'state', view: v, you: c.playerId });
       });
     });
   };
@@ -61,11 +66,14 @@ function createServer({ gameOpts = {} } = {}) {
     cur().toLobby();
   }
 
-  const hostSockets = () => [...clients].filter(c => c.role === 'tv');
+  // Class Board: every teacher's projector gets a room of its own.
+  const classes = new ClassRooms({ bank, reserved: () => [game.code], gameOpts: classOpts });
+
+  const hostSockets = () => family().filter(c => c.role === 'tv');
   const isHostKey = k => !!host.key && k === host.key;
 
   function syncConnected(playerId) {
-    const on = [...clients].some(c => c.role === 'phone' && c.playerId === playerId);
+    const on = family().some(c => c.role === 'phone' && c.playerId === playerId);
     cur().setConnected(playerId, on);
   }
 
@@ -81,6 +89,22 @@ function createServer({ gameOpts = {} } = {}) {
     res.type('image/svg+xml').set('Cache-Control', 'no-store')
       .send(await QRCode.toString(url, { type: 'svg', margin: 1, color: { dark: '#24372D', light: '#F2EEE3' } }));
   });
+
+  app.get('/class/qr.svg', async (req, res) => {
+    const proto = (req.headers['x-forwarded-proto'] || req.protocol).split(',')[0];
+    const code = String(req.query.code || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 8);
+    const url = `${proto}://${req.get('host')}/join?code=${code}`;
+    res.type('image/svg+xml').set('Cache-Control', 'no-store')
+      .send(await QRCode.toString(url, { type: 'svg', margin: 1, color: { dark: '#0b1a4a', light: '#ffffff' } }));
+  });
+  // The end-of-game report. Nothing is kept: it comes from the room in memory.
+  app.get('/class/report.csv', (req, res) => {
+    const csv = classes.report(req.query.code, String(req.query.key || ''));
+    if (csv == null) return res.status(404).send('That game has closed.');
+    const day = new Date().toISOString().slice(0, 10);
+    res.type('text/csv').set('Content-Disposition', `attachment; filename="class-board-${day}.csv"`).set('Cache-Control', 'no-store').send(csv);
+  });
+  app.get('/api/class-units', (req, res) => res.json(bank.list()));
 
   app.get('/api/themes', (req, res) => res.json(themes.list()));
 
@@ -106,10 +130,10 @@ function createServer({ gameOpts = {} } = {}) {
   const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 16 * 1024 });
 
   const kick = id => {
-    clients.forEach(c => { if (c.role === 'phone' && c.playerId === id) { send(c.ws, { t: 'kicked' }); c.playerId = null; c.role = null; } });
+    family().forEach(c => { if (c.role === 'phone' && c.playerId === id) { send(c, { t: 'kicked' }); c.playerId = null; c.role = null; } });
     cur().remove(id);
   };
-  const leave = (m, id, c) => { c.playerId = null; c.role = null; cur().remove(id); send(c.ws, { t: 'left' }); };
+  const leave = (m, id, c) => { c.playerId = null; c.role = null; cur().remove(id); send(c, { t: 'left' }); };
 
   const QUIZ_TV = {
     switchGame: m => switchGame(m.to),
@@ -226,71 +250,125 @@ function createServer({ gameOpts = {} } = {}) {
 
   function helloTv(c, m) {
     const busy = hostSockets().filter(x => x !== c).length > 0;
-    if (!isHostKey(m.hostKey) && busy && !m.takeover) { send(c.ws, { t: 'busy' }); return; }
+    if (!isHostKey(m.hostKey) && busy && !m.takeover) { send(c, { t: 'busy' }); return; }
     if (!isHostKey(m.hostKey) || m.takeover) {
       // A new screen takes over: the old one is told and stops being the TV.
       host.key = crypto.randomBytes(16).toString('hex');
-      hostSockets().forEach(x => { if (x !== c) { send(x.ws, { t: 'replaced' }); x.role = null; } });
+      hostSockets().forEach(x => { if (x !== c) { send(x, { t: 'replaced' }); x.role = null; } });
     }
     c.role = 'tv';
-    send(c.ws, { t: 'host', hostKey: m.hostKey && isHostKey(m.hostKey) && !m.takeover ? m.hostKey : host.key });
-    send(c.ws, { t: 'state', view: view() });
+    send(c, { t: 'host', hostKey: m.hostKey && isHostKey(m.hostKey) && !m.takeover ? m.hostKey : host.key });
+    send(c, { t: 'state', view: view() });
   }
 
   function helloPhone(c, m) {
     let p = m.token ? cur().players.find(x => x.token === m.token) : null;
     if (!p) {
-      if (!m.name) { send(c.ws, { t: 'needJoin' }); return; }
+      if (!m.name) { send(c, { t: 'needJoin' }); return; }
       if (String(m.code || '').trim().toUpperCase() !== cur().code) throw new GameError('That code doesn’t match the one on the TV.');
       p = cur().join(m.name);
     }
     if (c.playerId && c.playerId !== p.id) { const old = c.playerId; c.playerId = null; syncConnected(old); }
     c.role = 'phone';
     c.playerId = p.id;
-    send(c.ws, { t: 'joined', token: p.token, id: p.id, name: p.name });
+    send(c, { t: 'joined', token: p.token, id: p.id, name: p.name });
     syncConnected(p.id);
-    send(c.ws, { t: 'state', view: view(), you: p.id });
+    send(c, { t: 'state', view: view(), you: p.id });
+  }
+
+  // Every connection, WebSocket or the polling fallback, comes through here.
+  function onMessage(c, m) {
+    if (!m || typeof m !== 'object') return;
+    try {
+      if (m.t === 'hello' && m.role === 'classTv') return classes.helloTv(c, m);
+      if (c.room) return classes.handle(c, m);
+      if (m.t === 'hello' && m.role === 'tv') return helloTv(c, m);
+      if (m.t === 'hello' && m.role === 'student') return classes.helloStudent(c, m);
+      if (m.t === 'hello' && m.role === 'phone') {
+        // Someone typed a class code on the family join page.
+        if (m.name && classes.has(m.code)) return send(c, { t: 'goto', url: `/join?code=${String(m.code).trim().toUpperCase()}` });
+        return helloPhone(c, m);
+      }
+      const tv = { feud: FEUD_TV, wheel: WHEEL_TV, quiz: QUIZ_TV }[mode] || TV_CMDS;
+      const phone = { feud: FEUD_PHONE, wheel: WHEEL_PHONE, quiz: QUIZ_PHONE }[mode] || PHONE_CMDS;
+      if (c.role === 'tv' && tv[m.t]) return tv[m.t](m);
+      if (c.role === 'phone' && c.playerId && phone[m.t]) return phone[m.t](m, c.playerId, c);
+    } catch (e) {
+      if (e instanceof GameError || e instanceof FeudError || e instanceof WheelError || e instanceof QuizError || e instanceof ClassError) return send(c, { t: 'error', msg: e.message });
+      console.error(e);
+      send(c, { t: 'error', msg: 'Something went wrong.' });
+    }
+  }
+
+  function onClose(c) {
+    if (!clients.delete(c)) return;
+    if (c.room) return classes.left(c);
+    if (c.playerId) syncConnected(c.playerId);
   }
 
   wss.on('connection', ws => {
-    const c = { ws, role: null, playerId: null, alive: true };
+    const c = { ws, kind: 'ws', role: null, playerId: null, room: null, alive: true,
+      send: msg => { if (ws.readyState === 1) ws.send(JSON.stringify(msg)); } };
     clients.add(c);
     ws.on('pong', () => { c.alive = true; });
-    ws.on('message', data => {
-      let m;
-      try { m = JSON.parse(data); } catch { return; }
-      if (!m || typeof m !== 'object') return;
-      try {
-        if (m.t === 'hello' && m.role === 'tv') return helloTv(c, m);
-        if (m.t === 'hello' && m.role === 'phone') return helloPhone(c, m);
-        const tv = { feud: FEUD_TV, wheel: WHEEL_TV, quiz: QUIZ_TV }[mode] || TV_CMDS;
-        const phone = { feud: FEUD_PHONE, wheel: WHEEL_PHONE, quiz: QUIZ_PHONE }[mode] || PHONE_CMDS;
-        if (c.role === 'tv' && tv[m.t]) return tv[m.t](m);
-        if (c.role === 'phone' && c.playerId && phone[m.t]) return phone[m.t](m, c.playerId, c);
-      } catch (e) {
-        if (e instanceof GameError || e instanceof FeudError || e instanceof WheelError || e instanceof QuizError) return send(ws, { t: 'error', msg: e.message });
-        console.error(e);
-        send(ws, { t: 'error', msg: 'Something went wrong.' });
-      }
-    });
-    ws.on('close', () => {
-      clients.delete(c);
-      if (c.playerId) syncConnected(c.playerId);
-    });
+    ws.on('message', data => { let m; try { m = JSON.parse(data); } catch { return; } onMessage(c, m); });
+    ws.on('close', () => onClose(c));
   });
+
+  // Fallback for networks that block WebSockets (some school firewalls do):
+  // the browser opens a session, posts messages and long-polls for replies.
+  const polls = new Map();
+  app.post('/rt/open', (req, res) => {
+    const sid = crypto.randomBytes(16).toString('hex');
+    const p = { queue: [], waiter: null, last: Date.now() };
+    const flush = () => { if (p.waiter && p.queue.length) { const w = p.waiter; p.waiter = null; clearTimeout(w.t); w.res.json(p.queue.splice(0)); } };
+    p.c = { kind: 'poll', role: null, playerId: null, room: null, send: msg => { p.queue.push(msg); if (p.queue.length > 500) p.queue.shift(); flush(); } };
+    p.flush = flush;
+    polls.set(sid, p);
+    clients.add(p.c);
+    res.json({ sid });
+  });
+  app.get('/rt/poll', (req, res) => {
+    const p = polls.get(String(req.query.sid));
+    if (!p) return res.status(410).json({ error: 'gone' });
+    p.last = Date.now();
+    res.set('Cache-Control', 'no-store');
+    if (p.queue.length) return res.json(p.queue.splice(0));
+    if (p.waiter) { clearTimeout(p.waiter.t); p.waiter.res.json([]); }
+    p.waiter = { res, t: setTimeout(() => { if (p.waiter && p.waiter.res === res) { p.waiter = null; res.json([]); } }, 25000) };
+  });
+  app.post('/rt/send', express.json({ limit: '16kb' }), (req, res) => {
+    const p = polls.get(String(req.query.sid));
+    if (!p) return res.status(410).json({ error: 'gone' });
+    p.last = Date.now();
+    onMessage(p.c, req.body);
+    res.json({ ok: true });
+  });
+  app.post('/rt/close', (req, res) => {
+    const sid = String(req.query.sid), p = polls.get(sid);
+    if (p) { polls.delete(sid); if (p.waiter) { clearTimeout(p.waiter.t); p.waiter.res.status(410).json({ error: 'gone' }); p.waiter = null; } onClose(p.c); }
+    res.json({ ok: true });
+  });
+  const sweep = setInterval(() => {
+    const now = Date.now();
+    polls.forEach((p, sid) => { if (now - p.last > 45000 && !p.waiter) { polls.delete(sid); onClose(p.c); } });
+  }, 10000);
+  server.on('close', () => polls.forEach(p => { if (p.waiter) clearTimeout(p.waiter.t); }));
+  sweep.unref();
 
   // Keep connections open through Render's proxy, and notice phones that vanished.
   const beat = setInterval(() => {
     clients.forEach(c => {
+      if (c.kind !== 'ws') return;
       if (!c.alive) { c.ws.terminate(); return; }
       c.alive = false;
       try { c.ws.ping(); } catch {}
     });
   }, 25000);
   beat.unref();
-  server.on('close', () => { clearInterval(beat); game.stopTimer(); feud.stopTimer(); wheel.stopTimer(); wheel.stopStep(); quiz.stopTimer(); });
+  server.on('close', () => { clearInterval(beat); clearInterval(sweep); classes.stop(); game.stopTimer(); feud.stopTimer(); wheel.stopTimer(); wheel.stopStep(); quiz.stopTimer(); });
 
-  return { server, game, feud, wheel, quiz, themes };
+  return { server, game, feud, wheel, quiz, themes, classes };
 }
 
 module.exports = { createServer };

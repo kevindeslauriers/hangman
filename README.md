@@ -1,10 +1,41 @@
 # Game night
 
-Four party games for the TV: **Hangman**, **Family Face-Off** (a survey game show), **Spin & Solve** (a wheel-and-puzzle game show) and **Answer Board** (a quiz-board game show). The TV shows the board; everyone plays on their own phone. Switch games from the TV lobby.
+Four party games for the TV, plus a classroom quiz (see Class Board): **Hangman**, **Family Face-Off** (a survey game show), **Spin & Solve** (a wheel-and-puzzle game show) and **Answer Board** (a quiz-board game show). The TV shows the board; everyone plays on their own phone. Switch games from the TV lobby.
 
 - **TV:** open `/tv` (full screen it). The lobby shows a QR code and a 4 letter code.
 - **Phones:** scan the QR code, or open the site and type the code and a name.
 - Only one game runs at a time. Opening `/tv` on another screen offers to move the game there.
+
+## Class Board (for school)
+
+A quiz board for a whole class, built for SNC1W (Grade 9 Science, de-streamed). The teacher's computer drives the projector; every student answers every clue on their own laptop or phone.
+
+- **Teacher:** open `/class`. Each teacher gets their own room and code, so classes never meet each other or the family games. Choose the units, the number of teams, one or two boards, the time per clue, Daily Doubles and the final clue. Click a student's name to move, rename or remove them. Use **New class (new code)** when the next class arrives.
+- **Students:** go to `/join` (or scan the QR code) and type the code and their first name, then pick their team (table group). A simple name filter blocks rude names.
+- A team picks each clue (on a device, or the teacher clicks it). Everyone answers before the timer runs out; answers close early once everyone has answered. Right answers earn the student the clue's value; the team earns the value × the share of its members who got it right.
+- Clues are multiple choice (A to D keys work), typed (spelling is forgiven) or numbers (`3e8` and `3 x 10^8` both work; number clues get 50% more time).
+- After each clue the board shows the answer, the class's % right, each team's result and how many picked each choice. For typed answers it groups what students wrote, so the teacher can **Accept** a near miss for everyone who wrote it.
+- **Daily Double:** the team that finds it agrees on a wager. Everyone answers; the team wins the wager if at least half of its members are right. **Final clue:** every team wagers the same way.
+- The teacher can pause, close answers early, skip a clue or end a board. **Report (CSV)** downloads % right for each question and every student's answers and score. Nothing is stored on the server: rooms live in memory and close after 3 hours with nobody connected.
+- If a school network blocks WebSockets, the pages switch to ordinary web requests (long polling) on their own.
+
+### Class clue banks
+
+Each file in `class-clues/` is one unit of a course:
+
+```
+# Course: SNC1W | Grade 9 Science (De-streamed)
+# Unit: bio | Biology: Sustainable Ecosystems
+## ENERGY FLOW
+1 | On average, about this percent of the energy ... | 10% | 1%; 50%; 90%
+2 | Most of the energy that is not passed on is lost as this | HEAT | LIGHT; SOUND; ELECTRICITY
+3 | Producers capture 10 000 kJ. How many kJ reach the primary consumers? | = 1000 kJ ~1%
+4 | Name the process ... | CELLULAR RESPIRATION / RESPIRATION
+...
+FINAL | ENERGY FLOW | clue | answer
+```
+
+Each category has one clue at each level 1 to 5 (worth 100 to 500, doubled on the second board). An answer with `| WRONG; WRONG; WRONG` after it is multiple choice; `= number unit ~tolerance` is a number (tolerance `~2%` by default, `~0` for exact); anything else is typed, with other accepted answers after slashes. `^` in a clue shows as a superscript (`10^8`). SNC1W has four units with 12 categories and 4 final clues each. Another course is just more files with a different `# Course:` line.
 
 ## Rules
 

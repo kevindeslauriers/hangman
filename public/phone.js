@@ -17,6 +17,7 @@ function connect() {
       P.token = m.token; P.me = m.id; P.needJoin = false; P.toast = '';
       try { localStorage.setItem('hangman-token', m.token); localStorage.setItem('hangman-name', m.name); } catch (e) {}
     } else if (m.t === 'needJoin') { P.needJoin = true; P.me = null; }
+    else if (m.t === 'goto') { location.href = m.url; return; }
     else if (m.t === 'state') { P.view = m.view; if (m.you) P.me = m.you; }
     else if (m.t === 'error') { P.toast = m.msg; buzz(); }
     else if (m.t === 'kicked' || m.t === 'left') {
