@@ -182,11 +182,13 @@ function renderLobby(v, entering) {
   });
   const s = v.settings;
   if (document.activeElement !== $('#rounds')) $('#rounds').value = String(s.rounds);
+  if (document.activeElement !== $('#difficulty')) $('#difficulty').value = s.difficulty;
   $('#choices').checked = s.choices; $('#penalty').checked = s.penalty; $('#final').checked = s.final;
   $('#startGame').disabled = !v.players.length;
 }
 const setting = o => cmd('settings', { settings: o });
 $('#rounds').onchange = e => setting({ rounds: +e.target.value });
+$('#difficulty').onchange = e => setting({ difficulty: e.target.value });
 $('#choices').onchange = e => setting({ choices: e.target.checked });
 $('#penalty').onchange = e => setting({ penalty: e.target.checked });
 $('#final').onchange = e => setting({ final: e.target.checked });

@@ -134,10 +134,12 @@ body{font-size:clamp(14px,1.45vw,30px);overflow:hidden;height:100vh;
       <h2>Settings</h2>
       <h3>Game</h3>
       <div class="gamepick"><button class="btn" data-game="hangman">Hangman</button><button class="btn" data-game="feud">Family Face-Off</button><button class="btn" data-game="wheel">Spin &amp; Solve</button><button class="btn on">Answer Board</button></div>
+      <h3>Clues</h3>
+      <select class="field" id="difficulty" style="max-width:16em"><option value="standard">Challenging (trivia night)</option><option value="easy">Easy (for kids)</option></select>
       <h3>Rounds</h3>
       <select class="field" id="rounds" style="max-width:16em"><option value="1">One board (quick game)</option><option value="2">Two boards (second one doubled)</option></select>
       <h3>Options</h3>
-      <label class="choice"><input type="checkbox" id="choices"> Easy mode: four choices to tap instead of typing</label>
+      <label class="choice"><input type="checkbox" id="choices"> Multiple choice: four answers to tap instead of typing</label>
       <label class="choice"><input type="checkbox" id="penalty"> Wrong answers lose the clue’s value (like the show)</label>
       <label class="choice"><input type="checkbox" id="final"> Final round: everyone wagers and answers one last clue</label>
       <p class="rules">The player in control picks a clue on their phone. The host reads it, then everyone races to buzz in. Get it right to win the money and pick next; get it wrong and someone else can buzz. No need to answer as a question. Hidden Daily Doubles let the picker bet on themselves.</p>

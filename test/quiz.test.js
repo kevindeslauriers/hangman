@@ -3,10 +3,10 @@ const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
-const { Quiz, QuizError, parseClues, stripQuestion } = require('../lib/quiz');
+const { Quiz, QuizError, ClueStore, parseClues, stripQuestion } = require('../lib/quiz');
 const { matchAnswer } = require('../lib/survey');
 
-const CLUES = parseClues(fs.readFileSync(path.join(__dirname, '..', 'clues', 'family.txt'), 'utf8'), 'family.txt');
+const CLUES = new ClueStore({ dir: path.join(__dirname, '..', 'clues') });
 
 function setup({ players = ['Ann', 'Ben'], settings = {} } = {}) {
   let now = 0;
@@ -40,8 +40,10 @@ test('every clue file parses, with enough categories and finals, and answers mat
     });
     cats += r.cats.length; finals += r.finals.length;
   }
-  assert.ok(cats >= 24, `${cats} categories`);
-  assert.ok(finals >= 6, `${finals} finals`);
+  assert.ok(cats >= 60, `${cats} categories`);
+  assert.ok(finals >= 16, `${finals} finals`);
+  // At least two full games of each difficulty before categories repeat.
+  for (const d of ['standard', 'easy']) assert.ok(CLUES.cats.filter(c => c.difficulty === d).length >= 24, d);
 });
 
 test('no "What is" needed, but it is fine to say it', () => {
@@ -84,8 +86,8 @@ test('a wrong answer lets the others buzz; no penalty unless it is turned on', (
   assert.equal(g.phase, 'reveal', 'everyone tried, so the answer is shown');
 });
 
-test('easy mode: choices come from the category, and a decoy never counts', () => {
-  const { g, ps, advance, plain } = setup();
+test('multiple choice: choices come from the category, and a decoy never counts', () => {
+  const { g, ps, advance, plain } = setup({ settings: { choices: true } });
   g.start();
   g.choose(g.controlId, ...plain());
   advance(10000);
@@ -142,4 +144,14 @@ test('the whole game: double round, then the final with wagers', () => {
   assert.equal(g.phase, 'champ');
   assert.equal(ps[0].score, 1600);
   assert.equal(g.champ.title, 'Ann wins!');
+});
+
+test('challenging clues by default; easy ones when picked', () => {
+  const { g } = setup();
+  g.start();
+  assert.ok(g.round().cats.every(c => c.difficulty === 'standard'));
+  assert.equal(g.settings.choices, false);
+  const e = setup({ settings: { difficulty: 'easy' } }).g;
+  e.start();
+  assert.ok(e.round().cats.every(c => c.difficulty === 'easy'));
 });

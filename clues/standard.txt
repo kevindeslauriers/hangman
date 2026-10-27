@@ -1,0 +1,271 @@
+# Clues: Standard
+# Difficulty: standard
+// Pub-trivia level: $200 is gettable, $1,000 is genuinely hard.
+// "## CATEGORY" then five clues, levels 1 (easiest) to 5:
+//   level | clue | ANSWER / other ways to say it
+// The other answers in a category are the wrong choices when choices are on,
+// so keep each category's answers the same kind of thing.
+// FINAL | CATEGORY | clue | ANSWER / others | WRONG; WRONG; WRONG
+
+## WORLD CAPITALS
+1 | Not Sydney or Melbourne, this planned city is Australia's capital | CANBERRA
+2 | Not Istanbul, this city is the capital of Turkey | ANKARA
+3 | New Zealand's capital, at the southern tip of the North Island | WELLINGTON
+4 | Built from scratch in the interior, this city replaced Rio de Janeiro as Brazil's capital in 1960 | BRASILIA
+5 | Kazakhstan's capital, which was briefly renamed Nur-Sultan before getting this name back in 2022 | ASTANA
+
+## U.S. PRESIDENTS
+1 | His face is on the $5 bill and the penny | ABRAHAM LINCOLN / LINCOLN
+2 | He was president when the U.S. bought the Louisiana Territory from France in 1803 | THOMAS JEFFERSON / JEFFERSON
+3 | The teddy bear is named after this president | THEODORE ROOSEVELT / TEDDY ROOSEVELT / ROOSEVELT
+4 | In 1893 he became the first president to serve two non-consecutive terms | GROVER CLEVELAND / CLEVELAND
+5 | The only person to serve as both president and Chief Justice of the Supreme Court | WILLIAM HOWARD TAFT / TAFT
+
+## CANADIAN PRIME MINISTERS
+1 | Canada's first prime minister, he appears on the old $10 bill | JOHN A. MACDONALD / JOHN A MACDONALD / MACDONALD
+2 | He brought home the constitution with the Charter of Rights and Freedoms in 1982 | PIERRE TRUDEAU / PIERRE ELLIOTT TRUDEAU
+3 | In 1993 she became Canada's first, and so far only, female prime minister | KIM CAMPBELL / CAMPBELL
+4 | Canada's longest-serving prime minister, he secretly held seances to talk to his late mother | WILLIAM LYON MACKENZIE KING / MACKENZIE KING
+5 | He won the 1957 Nobel Peace Prize for helping end the Suez Crisis, before becoming PM | LESTER PEARSON / LESTER B PEARSON / PEARSON
+
+## THE ELEMENTS
+1 | Its chemical symbol is Au | GOLD
+2 | Its chemical symbol is Fe, from the Latin "ferrum" | IRON
+3 | Its chemical symbol is Na, and it's half of table salt | SODIUM
+4 | This gas makes up about 78% of Earth's atmosphere | NITROGEN
+5 | Its symbol, W, comes from its German name, wolfram | TUNGSTEN
+
+## SHAKESPEARE
+1 | "To be, or not to be: that is the question" | HAMLET
+2 | A pair of star-crossed lovers from feuding families in Verona | ROMEO AND JULIET
+3 | Three witches tell a Scottish thane he will be king | MACBETH
+4 | An old king divides his kingdom among his three daughters, with tragic results | KING LEAR / LEAR
+5 | Prospero, a magician stranded on an island with his daughter Miranda, conjures a storm | THE TEMPEST / TEMPEST
+
+## ROCK AND POP BANDS
+1 | Freddie Mercury fronted this British band | QUEEN
+2 | John, Paul, George and Ringo | THE BEATLES / BEATLES
+3 | "Smells Like Teen Spirit" put this Seattle grunge band on the map | NIRVANA
+4 | Geddy Lee, Alex Lifeson and Neil Peart made up this Toronto power trio | RUSH
+5 | Gord Downie was the lead singer of this band from Kingston, Ontario | THE TRAGICALLY HIP / TRAGICALLY HIP / THE HIP
+
+## RIVERS
+1 | It carries more water than any other river on Earth and flows through Brazil | AMAZON / AMAZON RIVER
+2 | It flows through Paris, past the Eiffel Tower | SEINE
+3 | With the Euphrates, it framed ancient Mesopotamia and flows through Baghdad | TIGRIS
+4 | Canada's longest river, it empties into the Beaufort Sea | MACKENZIE / MACKENZIE RIVER
+5 | It flows through four capital cities: Vienna, Bratislava, Budapest and Belgrade | DANUBE
+
+## BEST PICTURE WINNERS
+1 | 1997: Jack and Rose meet aboard a doomed ocean liner | TITANIC
+2 | 1994: "Life is like a box of chocolates" | FORREST GUMP
+3 | 1972: Marlon Brando plays the head of the Corleone crime family | THE GODFATHER / GODFATHER
+4 | 2003: the third film in Peter Jackson's Middle-earth trilogy | THE RETURN OF THE KING / RETURN OF THE KING / LORD OF THE RINGS
+5 | 2019: the first film not in English to win Best Picture, about two very different Korean families | PARASITE
+
+## AUTHORS
+1 | He wrote "Animal Farm" and "Nineteen Eighty-Four" | GEORGE ORWELL / ORWELL
+2 | She wrote "Pride and Prejudice" | JANE AUSTEN / AUSTEN
+3 | This Canadian wrote "The Handmaid's Tale" | MARGARET ATWOOD / ATWOOD
+4 | This P.E.I. author wrote "Anne of Green Gables" | LUCY MAUD MONTGOMERY / L M MONTGOMERY / LM MONTGOMERY / MONTGOMERY
+5 | This Colombian Nobel winner wrote "One Hundred Years of Solitude" | GABRIEL GARCIA MARQUEZ / GARCIA MARQUEZ / MARQUEZ
+
+## ANATOMY
+1 | Its medical name is the clavicle | COLLARBONE / COLLAR BONE
+2 | The body's largest internal organ, it can regrow from a small piece | LIVER
+3 | This organ behind the stomach makes insulin | PANCREAS
+4 | Also called the stirrup, it's the smallest bone in the body | STAPES
+5 | These glands sitting on top of the kidneys release adrenaline | ADRENAL GLANDS / ADRENAL GLAND / ADRENALS
+
+## THE SOLAR SYSTEM
+1 | Its Great Red Spot is a storm bigger than Earth | JUPITER
+2 | This ice giant spins on its side, tipped over at about 98 degrees | URANUS
+3 | Orbiting Jupiter, it's the largest moon in the solar system | GANYMEDE
+4 | Saturn's largest moon, the only moon with a thick atmosphere | TITAN
+5 | A dwarf planet, it's the largest object in the asteroid belt | CERES
+
+## EXPLORERS
+1 | He reached the Americas in 1492 while looking for a route to Asia | CHRISTOPHER COLUMBUS / COLUMBUS
+2 | This Venetian wrote about his years at the court of Kublai Khan | MARCO POLO / POLO
+3 | His expedition was the first to sail around the world, though he died on the way | FERDINAND MAGELLAN / MAGELLAN
+4 | In 1534 he planted a cross at Gaspe and claimed the land for France | JACQUES CARTIER / CARTIER
+5 | In 1911 this Norwegian beat Robert Scott's team to the South Pole | ROALD AMUNDSEN / AMUNDSEN
+
+## MYTHOLOGY
+1 | King of the Greek gods, he threw lightning bolts | ZEUS
+2 | The Roman god of war, a planet is named after him | MARS
+3 | Son of Odin, this Norse god swings the hammer Mjolnir | THOR
+4 | The Greek goddess of wisdom, a famous city is named after her | ATHENA
+5 | The jackal-headed Egyptian god of mummification and the dead | ANUBIS
+
+## PAINTERS
+1 | He painted the "Mona Lisa" | LEONARDO DA VINCI / DA VINCI / LEONARDO
+2 | He painted "The Starry Night" and famously cut off part of his own ear | VINCENT VAN GOGH / VAN GOGH
+3 | He painted the ceiling of the Sistine Chapel | MICHELANGELO
+4 | This Spaniard co-founded Cubism and painted "Guernica" | PABLO PICASSO / PICASSO
+5 | This surrealist painted melting clocks in "The Persistence of Memory" | SALVADOR DALI / DALI
+
+## NHL TEAMS
+1 | With 24 Stanley Cups, this team has won more than any other | MONTREAL CANADIENS / CANADIENS / HABS
+2 | Wayne Gretzky won four Stanley Cups with this team | EDMONTON OILERS / OILERS
+3 | 1967 was the last time this Original Six team won the Cup | TORONTO MAPLE LEAFS / MAPLE LEAFS / LEAFS
+4 | In 1994 this Original Six team ended a 54-year Stanley Cup drought | NEW YORK RANGERS / RANGERS
+5 | In 2011 this team left Atlanta to become the new Winnipeg Jets | ATLANTA THRASHERS / THRASHERS
+
+## OLYMPIC HOSTS
+1 | This B.C. city hosted the 2010 Winter Olympics | VANCOUVER
+2 | This Quebec city hosted the 1976 Summer Olympics | MONTREAL
+3 | This Alberta city hosted the 1988 Winter Olympics | CALGARY
+4 | Its "Bird's Nest" stadium was the centrepiece of the 2008 Summer Games | BEIJING
+5 | It hosted the first modern Olympic Games, in 1896 | ATHENS
+
+## LANGUAGES
+1 | It's the official language of Brazil | PORTUGUESE
+2 | It's the language of ancient Rome | LATIN
+3 | More people speak it as a first language than any other language | MANDARIN / MANDARIN CHINESE / CHINESE
+4 | Also called Farsi, it's the official language of Iran | PERSIAN
+5 | It's the most widely spoken Inuit language in Nunavut | INUKTITUT
+
+## SCIENTISTS
+1 | E = mc squared | ALBERT EINSTEIN / EINSTEIN
+2 | A falling apple supposedly inspired his law of gravity | ISAAC NEWTON / NEWTON
+3 | The first person to win Nobel Prizes in two different sciences | MARIE CURIE / CURIE
+4 | This Canadian doctor shared the 1923 Nobel Prize for the discovery of insulin | FREDERICK BANTING / BANTING
+5 | This monk's experiments with pea plants made him the father of genetics | GREGOR MENDEL / MENDEL
+
+## COMPOSERS
+1 | He kept composing after going deaf, including his Ninth Symphony | LUDWIG VAN BEETHOVEN / BEETHOVEN
+2 | This child prodigy from Salzburg wrote "The Magic Flute" | WOLFGANG AMADEUS MOZART / MOZART
+3 | This Italian wrote the violin concertos "The Four Seasons" | ANTONIO VIVALDI / VIVALDI
+4 | This Russian wrote the music for "The Nutcracker" and "Swan Lake" | TCHAIKOVSKY / PYOTR TCHAIKOVSKY
+5 | This French composer wrote the dreamy piano piece "Clair de Lune" | CLAUDE DEBUSSY / DEBUSSY
+
+## FAMOUS SHIPS
+1 | It struck an iceberg on its maiden voyage in 1912 | TITANIC / RMS TITANIC
+2 | The Pilgrims sailed to America on it in 1620 | MAYFLOWER
+3 | Charles Darwin sailed to the Galapagos on this ship | BEAGLE / HMS BEAGLE
+4 | This German battleship sank HMS Hood in 1941, then was sunk days later | BISMARCK
+5 | This Nova Scotia racing schooner is on the Canadian dime | BLUENOSE
+
+## BY THE NUMBERS
+1 | The number of degrees in a right angle | 90 / NINETY
+2 | The only even prime number | 2 / TWO
+3 | The number of sides on a dodecagon | 12 / TWELVE
+4 | The number of squares on a chessboard | 64 / SIXTY FOUR / SIXTY-FOUR
+5 | The number of bones in an adult human body | 206 / TWO HUNDRED SIX / TWO HUNDRED AND SIX
+
+## PROVINCES AND TERRITORIES
+1 | Its capital is Halifax | NOVA SCOTIA
+2 | By area, it's Canada's largest province | QUEBEC
+3 | Canada's smallest province, where Confederation was first discussed in 1864 | PRINCE EDWARD ISLAND / PEI / P E I
+4 | Banff, Jasper and Dinosaur Provincial Park are all here | ALBERTA
+5 | Canada's newest territory, created in 1999 | NUNAVUT
+
+## TV SHOWS
+1 | Six New Yorkers hang out at the Central Perk coffee shop | FRIENDS
+2 | It's set at the Scranton branch of the Dunder Mifflin Paper Company | THE OFFICE / OFFICE
+3 | Chemistry teacher Walter White becomes a drug kingpin | BREAKING BAD
+4 | The great houses of Westeros fight over the Iron Throne | GAME OF THRONES
+5 | The Rose family loses its fortune and moves to a small town they once bought as a joke | SCHITT'S CREEK / SCHITTS CREEK
+
+## WORLD CUISINE
+1 | Sushi is a classic dish from this country | JAPAN
+2 | Paella comes from this country's Valencia region | SPAIN
+3 | Pierogi are a national dish of this country | POLAND
+4 | Kimchi is a staple of this country's cooking | SOUTH KOREA / KOREA
+5 | Pho, a noodle soup, is this country's best-known dish | VIETNAM
+
+## INVENTORS
+1 | He patented the telephone in 1876 | ALEXANDER GRAHAM BELL / BELL
+2 | Known as the Wizard of Menlo Park, he gave us the phonograph | THOMAS EDISON / EDISON
+3 | These brothers made the first powered airplane flight at Kitty Hawk in 1903 | THE WRIGHT BROTHERS / WRIGHT BROTHERS / WRIGHTS
+4 | This Canadian invented basketball in 1891 using peach baskets | JAMES NAISMITH / NAISMITH
+5 | Around 1440 he built a printing press with movable metal type | JOHANNES GUTENBERG / GUTENBERG
+
+## ANIMAL KINGDOM
+1 | The fastest land animal | CHEETAH
+2 | With the echidna, it's the only mammal that lays eggs | PLATYPUS / DUCK-BILLED PLATYPUS
+3 | The largest living lizard, found on Indonesian islands | KOMODO DRAGON
+4 | A flightless bird and the national symbol of New Zealand | KIWI
+5 | A group of these birds is called a parliament | OWLS / OWL
+
+## BIG BRANDS
+1 | Steve Jobs and Steve Wozniak founded it in a garage | APPLE
+2 | It started in 1994 as an online bookstore run from Jeff Bezos's garage | AMAZON
+3 | This Swedish furniture company names its products, like the Billy bookcase | IKEA
+4 | This Waterloo company made the BlackBerry | RESEARCH IN MOTION / RIM / BLACKBERRY
+5 | A hockey player opened the first one in Hamilton, Ontario, in 1964 | TIM HORTONS / TIM HORTON'S / TIMS
+
+## WHO SAID IT?
+1 | "I have a dream" | MARTIN LUTHER KING JR / MARTIN LUTHER KING / MLK
+2 | "Ask not what your country can do for you" | JOHN F KENNEDY / JOHN KENNEDY / KENNEDY / JFK
+3 | "We shall fight on the beaches" | WINSTON CHURCHILL / CHURCHILL
+4 | "Float like a butterfly, sting like a bee" | MUHAMMAD ALI / ALI
+5 | "I think, therefore I am" | RENE DESCARTES / DESCARTES
+
+## MOUNTAINS
+1 | The tallest mountain on Earth, measured from sea level | MOUNT EVEREST / EVEREST
+2 | The highest mountain in Africa, in Tanzania | KILIMANJARO / MOUNT KILIMANJARO
+3 | Once called Mount McKinley, it's the highest peak in North America | DENALI
+4 | Canada's highest mountain, in the Yukon | MOUNT LOGAN / LOGAN
+5 | This volcano buried Pompeii in 79 AD | MOUNT VESUVIUS / VESUVIUS
+
+## SEAS AND BAYS
+1 | It separates Europe and Africa and gives its name to a famous diet | MEDITERRANEAN / MEDITERRANEAN SEA
+2 | Its shore is the lowest point on land, and it's so salty you float | DEAD SEA
+3 | This sea lies between Saudi Arabia and northeast Africa | RED SEA
+4 | This huge bay in northern Canada is named for an English explorer set adrift there in 1611 | HUDSON BAY
+5 | It has the world's highest tides, between New Brunswick and Nova Scotia | BAY OF FUNDY / FUNDY
+
+## ANCIENT CIVILIZATIONS
+1 | They built the pyramids of Giza | EGYPTIANS / ANCIENT EGYPTIANS / EGYPT
+2 | They built Machu Picchu high in the Andes | INCA / INCAS
+3 | Their stepped pyramid of Chichen Itza still stands in Mexico | MAYA / MAYANS
+4 | They built Tenochtitlan on a lake where Mexico City now stands | AZTECS / AZTEC
+5 | This Greek city-state raised boys to be soldiers and fought 300 strong at Thermopylae | SPARTA / SPARTANS
+
+## TECH ACRONYMS
+1 | WWW | WORLD WIDE WEB
+2 | CPU | CENTRAL PROCESSING UNIT
+3 | USB | UNIVERSAL SERIAL BUS
+4 | GPS | GLOBAL POSITIONING SYSTEM
+5 | HTML | HYPERTEXT MARKUP LANGUAGE / HYPER TEXT MARKUP LANGUAGE
+
+## MUSICALS
+1 | Lin-Manuel Miranda's hip-hop musical about a Founding Father | HAMILTON
+2 | The song "Memory" comes from this musical about felines | CATS
+3 | Jean Valjean is hunted by Javert | LES MISERABLES / LES MIS
+4 | "The Music of the Night" is sung in the Paris Opera's cellars | THE PHANTOM OF THE OPERA / PHANTOM OF THE OPERA / PHANTOM
+5 | It tells the backstory of Elphaba, the green-skinned witch of Oz | WICKED
+
+## FICTIONAL DETECTIVES
+1 | He lives at 221B Baker Street | SHERLOCK HOLMES / HOLMES
+2 | Agatha Christie's Belgian detective with "little grey cells" | HERCULE POIROT / POIROT
+3 | Agatha Christie's elderly sleuth from the village of St. Mary Mead | MISS MARPLE / JANE MARPLE / MARPLE
+4 | This teenage sleuth's mysteries are credited to Carolyn Keene | NANCY DREW
+5 | G.K. Chesterton's crime-solving Catholic priest | FATHER BROWN
+
+## CURRENCIES
+1 | The currency of Japan | YEN / JAPANESE YEN
+2 | The currency of the United Kingdom | POUND / POUND STERLING / POUNDS / BRITISH POUND
+3 | The currency of India | RUPEE / RUPEES / INDIAN RUPEE
+4 | The currency of Mexico | PESO / PESOS / MEXICAN PESO
+5 | The currency of Switzerland | FRANC / SWISS FRANC / FRANCS
+
+## COUNTRIES
+1 | This country is shaped like a boot | ITALY
+2 | By area, it's the largest country in the world | RUSSIA
+3 | In 2023 it passed China as the world's most populous country | INDIA
+4 | The world's smallest country, surrounded by Rome | VATICAN CITY / VATICAN / HOLY SEE
+5 | This landlocked Himalayan country is home to the south side of Everest | NEPAL
+
+FINAL | WORLD LEADERS | Released in 1990 after 27 years in prison, he became his country's president four years later | NELSON MANDELA / MANDELA | DESMOND TUTU; STEVE BIKO; ROBERT MUGABE
+FINAL | CHEMISTRY | Its chemical formula is NaCl | SALT / TABLE SALT / SODIUM CHLORIDE | BAKING SODA; BLEACH; CHALK
+FINAL | CANADA | The only province that is officially bilingual | NEW BRUNSWICK | QUEBEC; ONTARIO; MANITOBA
+FINAL | SPACE | In 1961 he became the first human in space | YURI GAGARIN / GAGARIN | NEIL ARMSTRONG; JOHN GLENN; ALAN SHEPARD
+FINAL | AUTHORS | He created the land of Narnia | C S LEWIS / CS LEWIS / C.S. LEWIS | J.R.R. TOLKIEN; ROALD DAHL; LEWIS CARROLL
+FINAL | GEOGRAPHY | At about 3,600 metres, it's the highest seat of government in the world | LA PAZ | QUITO; BOGOTA; LIMA
+FINAL | HISTORY | The Berlin Wall came down in this year | 1989 / NINETEEN EIGHTY NINE / NINETEEN EIGHTY-NINE | 1991; 1987; 1945
+FINAL | ART | This museum is home to the "Mona Lisa" | THE LOUVRE / LOUVRE | THE PRADO; THE MET; THE UFFIZI
+FINAL | SPORTS | With five titles, it has won more FIFA World Cups than any other country | BRAZIL | GERMANY; ITALY; ARGENTINA
+FINAL | MUSIC | Her "My Heart Will Go On" was the theme from "Titanic" | CELINE DION / DION | SHANIA TWAIN; ALANIS MORISSETTE; SARAH MCLACHLAN

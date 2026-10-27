@@ -1,4 +1,5 @@
-# Clues: Family
+# Clues: Easy
+# Difficulty: easy
 // "## CATEGORY" then five clues, levels 1 (easiest) to 5:
 //   level | clue | ANSWER / other ways to say it
 // In easy mode the wrong choices are the other answers in the category, so

@@ -16,15 +16,16 @@ A right letter scores 1 point per spot and you go again. Three right in a row pu
 
 ## Answer Board
 
-A quiz board tuned for families, not champions.
+A quiz board for trivia night, with an easy set of clues for kids.
 
 - Six categories, five clues each ($200 to $1,000; the second board is doubled). The player in control picks a clue on their phone (the TV can pick too, by clicking a value).
 - The host reads the clue, then everyone races to **BUZZ**. Right answers win the money and control; after a wrong answer, anyone else can buzz. If nobody gets it, the answer is shown.
-- **Easy mode** (on by default): the player who buzzes taps one of four choices (the other answers in the category). Off: they type, with no need to say "What is…" and typos forgiven.
+- **Clues:** *Challenging* (the default, pub-trivia level: $200 is gettable, $1,000 is hard) or *Easy (for kids)*, chosen in the lobby.
+- Players type their answers, with no need to say "What is…" and typos forgiven. **Multiple choice** (off by default) gives four answers to tap instead (the other answers in the category).
 - Wrong answers cost nothing unless **Wrong answers lose points** is on.
 - Hidden **Daily Doubles** (one on the first board, two on the second): the picker wagers $5 up to their score or the board's top value.
 - **Final round:** everyone secretly wagers on the category, then answers the clue in 30 seconds to an original thinking tune. Answers are revealed from last place up.
-- Options in the lobby: one or two boards, easy mode, wrong-answer penalty, final round. **End round** on the TV skips the rest of a board.
+- Options in the lobby: clue difficulty, one or two boards, multiple choice, wrong-answer penalty, final round. **End round** on the TV skips the rest of a board.
 
 ### Clues
 
@@ -38,7 +39,7 @@ Clues are `.txt` files in [`clues/`](clues):
 FINAL | SPACE | This is the closest star to Earth | THE SUN / SUN | THE NORTH STAR; THE MOON; SIRIUS
 ```
 
-Each category has one clue at each level 1 (easiest, $200) to 5 ($1,000): level, clue, then the answer and other ways to say it after slashes. Keep a category's answers the same kind of thing, since they are the wrong choices in easy mode. A final clue lists its own three wrong choices. `npm test` checks every file.
+`standard.txt` holds the challenging clues and `easy.txt` the kids' ones; a `# Difficulty: easy` line at the top of a file marks it easy. Each category has one clue at each level 1 (easiest, $200) to 5 ($1,000): level, clue, then the answer and other ways to say it after slashes. Keep a category's answers the same kind of thing, since they are the wrong choices in multiple choice. A final clue lists its own three wrong choices. `npm test` checks every file.
 
 ## Spin & Solve
 
